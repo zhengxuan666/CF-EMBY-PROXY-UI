@@ -1,0 +1,20 @@
+{
+  "sortImports": false,
+  "sortPackageJson": false,
+  "sortTailwindcss": false,
+  "ignorePatterns": [
+    "worker.js",
+    "**/*.html",
+    "frontend/dist/**",
+    ".worker-dist/**",
+    "bundled/**",
+    "node_modules/**",
+    "**/*.md",
+    ".github/**",
+    "**/*.yml",
+    "**/*.yaml",
+    "**/*.toml",
+    "logs-*.json",
+    "trace-*.json"
+  ]
+}

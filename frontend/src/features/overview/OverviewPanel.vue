@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import {
   Activity,
   BadgeAlert,
@@ -8,17 +8,17 @@ import {
   Database,
   RefreshCw,
   ShieldAlert,
-  Waypoints
-} from 'lucide-vue-next';
+  Waypoints,
+} from "lucide-vue-next";
 
-import SectionCard from '@/components/SectionCard.vue';
-import { destroyTrendChart, renderTrendChart } from '@/lib/chart';
+import SectionCard from "@/components/SectionCard.vue";
+import { destroyTrendChart, renderTrendChart } from "@/lib/chart";
 
 const props = defineProps({
   adminConsole: {
     type: Object,
-    default: null
-  }
+    default: null,
+  },
 });
 
 const canvasRef = ref(null);
@@ -27,40 +27,48 @@ const stats = computed(() => props.adminConsole?.stats || {});
 const runtimeStatus = computed(() => props.adminConsole?.runtimeStatus || {});
 const cacheMeta = computed(() => props.adminConsole?.cacheMeta || {});
 const bootstrap = computed(() => props.adminConsole?.adminBootstrap || {});
-const busy = computed(() => Boolean(
-  props.adminConsole?.state?.loading?.hydrate || props.adminConsole?.state?.loading?.snapshot
-));
+const busy = computed(() =>
+  Boolean(
+    props.adminConsole?.state?.loading?.hydrate || props.adminConsole?.state?.loading?.snapshot,
+  ),
+);
 const authRequired = computed(() => props.adminConsole?.state?.authRequired === true);
-const hydrateError = computed(() => String(props.adminConsole?.state?.errors?.hydrate || '').trim());
+const hydrateError = computed(() =>
+  String(props.adminConsole?.state?.errors?.hydrate || "").trim(),
+);
 
 const statTiles = computed(() => [
   {
-    title: '今日请求量',
-    value: String(stats.value.requestCountDisplay || '未加载').trim() || '未加载',
-    note: String(stats.value.requestSourceText || '等待 Worker 返回请求量口径').trim() || '等待 Worker 返回请求量口径'
+    title: "今日请求量",
+    value: String(stats.value.requestCountDisplay || "未加载").trim() || "未加载",
+    note:
+      String(stats.value.requestSourceText || "等待 Worker 返回请求量口径").trim() ||
+      "等待 Worker 返回请求量口径",
   },
   {
-    title: '今日流量',
-    value: String(stats.value.todayTraffic || '未加载').trim() || '未加载',
-    note: String(stats.value.trafficSourceText || '等待 Worker 返回流量统计').trim() || '等待 Worker 返回流量统计'
+    title: "今日流量",
+    value: String(stats.value.todayTraffic || "未加载").trim() || "未加载",
+    note:
+      String(stats.value.trafficSourceText || "等待 Worker 返回流量统计").trim() ||
+      "等待 Worker 返回流量统计",
   },
   {
-    title: '节点数',
+    title: "节点数",
     value: String(props.adminConsole?.nodeCount ?? 0),
-    note: '来自当前 KV 节点索引'
+    note: "来自当前 KV 节点索引",
   },
   {
-    title: '播放 / PlaybackInfo',
+    title: "播放 / PlaybackInfo",
     value: `${Number(stats.value.playCount) || 0} / ${Number(stats.value.infoCount) || 0}`,
-    note: '来自 D1 小时聚合或回退数据源'
-  }
+    note: "来自 D1 小时聚合或回退数据源",
+  },
 ]);
 
 const chartPoints = computed(() => {
   const series = Array.isArray(stats.value.hourlySeries) ? stats.value.hourlySeries : [];
   return series.map((point) => ({
-    label: String(point?.label || '').trim() || '--',
-    value: Number(point?.total) || 0
+    label: String(point?.label || "").trim() || "--",
+    value: Number(point?.total) || 0,
   }));
 });
 
@@ -75,32 +83,41 @@ onBeforeUnmount(() => {
   destroyTrendChart(canvasRef.value);
 });
 
-watch([chartPoints, canvasRef], async ([points, canvas]) => {
-  if (!canvas) return;
-  if (!points.length) {
-    destroyTrendChart(canvas);
-    return;
-  }
+watch(
+  [chartPoints, canvasRef],
+  async ([points, canvas]) => {
+    if (!canvas) return;
+    if (!points.length) {
+      destroyTrendChart(canvas);
+      return;
+    }
 
-  await nextTick();
-  await renderTrendChart(canvas, points, {
-    label: '每小时请求量',
-    borderColor: '#38bdf8',
-    backgroundColor: 'rgba(56, 189, 248, 0.18)'
-  });
-}, { immediate: true, deep: true, flush: 'post' });
+    await nextTick();
+    await renderTrendChart(canvas, points, {
+      label: "每小时请求量",
+      borderColor: "#38bdf8",
+      backgroundColor: "rgba(56, 189, 248, 0.18)",
+    });
+  },
+  { immediate: true, deep: true, flush: "post" },
+);
 
 const cloudflareCards = computed(() => {
   const cloudflare = runtimeStatus.value.cloudflare;
-  if (!cloudflare || typeof cloudflare !== 'object') return [];
-  return [cloudflare.kv, cloudflare.d1].filter((card) => card && typeof card === 'object');
+  if (!cloudflare || typeof cloudflare !== "object") return [];
+  return [cloudflare.kv, cloudflare.d1].filter((card) => card && typeof card === "object");
 });
 
 const noticeRows = computed(() => {
   const rows = [];
   const initHealth = bootstrap.value.initHealth;
-  if (initHealth && initHealth.ok === false && Array.isArray(initHealth.missing) && initHealth.missing.length > 0) {
-    rows.push(`初始化缺项：${initHealth.missing.join('、')}`);
+  if (
+    initHealth &&
+    initHealth.ok === false &&
+    Array.isArray(initHealth.missing) &&
+    initHealth.missing.length > 0
+  ) {
+    rows.push(`初始化缺项：${initHealth.missing.join("、")}`);
   }
   if (cacheMeta.value.warning) {
     rows.push(`缓存回退：${cacheMeta.value.warning}`);
@@ -117,70 +134,77 @@ const noticeRows = computed(() => {
 const summaryRows = computed(() => {
   const revisions = props.adminConsole?.revisions || {};
   return [
-    ['管理域名', String(props.adminConsole?.hostDomain || '未配置').trim() || '未配置'],
-    ['管理入口', String(props.adminConsole?.adminUrl || '未解析').trim() || '未解析'],
-    ['快照生成时间', formatDateTime(cacheMeta.value.generatedAt || stats.value.generatedAt || bootstrap.value.generatedAt)],
-    ['缓存状态', resolveCacheStatusLabel(cacheMeta.value.cacheStatus || stats.value.cacheStatus)],
-    ['Config Revision', compactRevision(revisions.configRevision)],
-    ['Nodes Revision', compactRevision(revisions.nodesRevision)]
+    ["管理域名", String(props.adminConsole?.hostDomain || "未配置").trim() || "未配置"],
+    ["管理入口", String(props.adminConsole?.adminUrl || "未解析").trim() || "未解析"],
+    [
+      "快照生成时间",
+      formatDateTime(
+        cacheMeta.value.generatedAt || stats.value.generatedAt || bootstrap.value.generatedAt,
+      ),
+    ],
+    ["缓存状态", resolveCacheStatusLabel(cacheMeta.value.cacheStatus || stats.value.cacheStatus)],
+    ["Config Revision", compactRevision(revisions.configRevision)],
+    ["Nodes Revision", compactRevision(revisions.nodesRevision)],
   ];
 });
 
 const hotspotLines = computed(() => {
   const hotspot = stats.value.d1WriteHotspot;
-  if (!hotspot || typeof hotspot !== 'object') return [];
-  return [
-    String(hotspot.summary || '').trim(),
-    String(hotspot.detail || '').trim()
-  ].filter(Boolean);
+  if (!hotspot || typeof hotspot !== "object") return [];
+  return [String(hotspot.summary || "").trim(), String(hotspot.detail || "").trim()].filter(
+    Boolean,
+  );
 });
 
-function formatDateTime(rawValue = '') {
-  const value = String(rawValue || '').trim();
-  if (!value) return '未提供';
+function formatDateTime(rawValue = "") {
+  const value = String(rawValue || "").trim();
+  if (!value) return "未提供";
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
 
-  return new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
+  return new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
   }).format(date);
 }
 
-function compactRevision(rawValue = '') {
-  const value = String(rawValue || '').trim();
-  if (!value) return '未生成';
+function compactRevision(rawValue = "") {
+  const value = String(rawValue || "").trim();
+  if (!value) return "未生成";
   return value.length > 14 ? `${value.slice(0, 14)}...` : value;
 }
 
-function resolveCacheStatusLabel(rawValue = '') {
-  const value = String(rawValue || '').trim().toLowerCase();
-  if (value === 'cache') return '命中缓存';
-  if (value === 'stale') return '陈旧回退';
-  if (value === 'live') return '实时生成';
-  return '未知';
+function resolveCacheStatusLabel(rawValue = "") {
+  const value = String(rawValue || "")
+    .trim()
+    .toLowerCase();
+  if (value === "cache") return "命中缓存";
+  if (value === "stale") return "陈旧回退";
+  if (value === "live") return "实时生成";
+  return "未知";
 }
 
 function resolveConnectionTone() {
-  if (authRequired.value) return 'border-amber-400/30 bg-amber-500/12 text-amber-200';
-  if (hydrateError.value) return 'border-rose-400/30 bg-rose-500/12 text-rose-200';
-  if (props.adminConsole?.connectionState === 'ready') return 'border-mint-400/30 bg-mint-400/12 text-mint-300';
-  if (busy.value) return 'border-ocean-500/30 bg-ocean-500/12 text-ocean-300';
-  return 'border-white/12 bg-white/6 text-slate-200';
+  if (authRequired.value) return "border-amber-400/30 bg-amber-500/12 text-amber-200";
+  if (hydrateError.value) return "border-rose-400/30 bg-rose-500/12 text-rose-200";
+  if (props.adminConsole?.connectionState === "ready")
+    return "border-mint-400/30 bg-mint-400/12 text-mint-300";
+  if (busy.value) return "border-ocean-500/30 bg-ocean-500/12 text-ocean-300";
+  return "border-white/12 bg-white/6 text-slate-200";
 }
 
 function resolveConnectionLabel() {
-  if (authRequired.value) return '需要登录';
-  if (hydrateError.value) return '加载失败';
-  if (props.adminConsole?.connectionState === 'ready') return 'Worker 已接通';
-  if (busy.value) return '正在同步';
-  return '等待初始化';
+  if (authRequired.value) return "需要登录";
+  if (hydrateError.value) return "加载失败";
+  if (props.adminConsole?.connectionState === "ready") return "Worker 已接通";
+  if (busy.value) return "正在同步";
+  return "等待初始化";
 }
 
 async function handleRefresh() {
@@ -197,7 +221,10 @@ async function handleRefresh() {
   >
     <template #meta>
       <div class="flex flex-wrap items-center justify-end gap-3">
-        <div class="inline-flex rounded-full border px-3 py-1 text-xs font-semibold" :class="resolveConnectionTone()">
+        <div
+          class="inline-flex rounded-full border px-3 py-1 text-xs font-semibold"
+          :class="resolveConnectionTone()"
+        >
           {{ resolveConnectionLabel() }}
         </div>
         <button
@@ -221,7 +248,8 @@ async function handleRefresh() {
         <div>
           <p class="text-sm font-semibold">本地前端已经连到 Worker，但当前会话尚未授权</p>
           <p class="mt-2 text-sm leading-6 text-amber-50/85">
-            先在 Worker 管理台完成登录，再回来刷新这一页。现在前端会优先复用登录后的 Cookie 会话，不单独实现第二套鉴权逻辑。
+            先在 Worker 管理台完成登录，再回来刷新这一页。现在前端会优先复用登录后的 Cookie
+            会话，不单独实现第二套鉴权逻辑。
           </p>
           <a
             :href="props.adminConsole?.loginUrl"
@@ -252,20 +280,23 @@ async function handleRefresh() {
             <div>
               <p class="text-sm font-medium text-white">24 小时请求走势</p>
               <p class="mt-1 text-xs text-slate-400">
-                峰值时段：{{ peakPoint ? `${peakPoint.label} / ${peakPoint.value}` : '等待数据' }}
+                峰值时段：{{ peakPoint ? `${peakPoint.label} / ${peakPoint.value}` : "等待数据" }}
               </p>
             </div>
           </div>
           <div class="text-right text-xs text-slate-400">
             <p>最新同步</p>
-            <p class="mt-1 text-slate-200">{{ formatDateTime(cacheMeta.generatedAt || stats.generatedAt) }}</p>
+            <p class="mt-1 text-slate-200">
+              {{ formatDateTime(cacheMeta.generatedAt || stats.generatedAt) }}
+            </p>
           </div>
         </div>
         <div class="mt-5 h-64">
           <canvas ref="canvasRef"></canvas>
         </div>
         <p class="mt-4 text-sm leading-6 text-slate-300">
-          当前请求走势图优先显示 Worker Usage；取不到时回退到 Zone Analytics 或本地 D1 小时聚合，因此可以直接观察不同数据源下的真实迁移效果。
+          当前请求走势图优先显示 Worker Usage；取不到时回退到 Zone Analytics 或本地 D1
+          小时聚合，因此可以直接观察不同数据源下的真实迁移效果。
         </p>
       </article>
 
@@ -282,7 +313,9 @@ async function handleRefresh() {
               class="rounded-2xl border border-white/8 bg-slate-950/50 px-4 py-3"
             >
               <p class="text-xs uppercase tracking-[0.16em] text-slate-400">{{ row[0] }}</p>
-              <p class="mt-3 break-all text-sm font-medium leading-6 text-slate-100">{{ row[1] }}</p>
+              <p class="mt-3 break-all text-sm font-medium leading-6 text-slate-100">
+                {{ row[1] }}
+              </p>
             </div>
           </div>
         </article>
@@ -315,8 +348,8 @@ async function handleRefresh() {
           <h3 class="text-sm font-medium text-white">这轮迁出的真实边界</h3>
         </div>
         <p class="mt-4 text-sm leading-6 text-slate-300">
-          现在已经不再是纯静态说明页，而是直接使用 `getAdminBootstrap` 与 `getDashboardSnapshot` 读取 Worker 数据。
-          这让后续继续迁移设置页和运行状态时，可以沿用同一条 API 桥接层。
+          现在已经不再是纯静态说明页，而是直接使用 `getAdminBootstrap` 与 `getDashboardSnapshot`
+          读取 Worker 数据。 这让后续继续迁移设置页和运行状态时，可以沿用同一条 API 桥接层。
         </p>
       </article>
       <article class="stat-tile">
@@ -334,7 +367,8 @@ async function handleRefresh() {
           </p>
         </div>
         <p v-else class="mt-4 text-sm leading-6 text-slate-300">
-          当前没有额外告警。只要后续把 Worker Shell 的 HTML 入口替换掉，这一屏就能直接成为正式管理台的一部分。
+          当前没有额外告警。只要后续把 Worker Shell 的 HTML
+          入口替换掉，这一屏就能直接成为正式管理台的一部分。
         </p>
       </article>
       <article class="stat-tile">
@@ -350,10 +384,14 @@ async function handleRefresh() {
           >
             <div class="flex items-center justify-between gap-3">
               <p class="text-sm font-medium text-white">{{ card.title }}</p>
-              <span class="text-xs uppercase tracking-[0.16em] text-slate-400">{{ card.status || 'idle' }}</span>
+              <span class="text-xs uppercase tracking-[0.16em] text-slate-400">{{
+                card.status || "idle"
+              }}</span>
             </div>
-            <p class="mt-3 text-sm text-brand-200">{{ card.summary || '暂无摘要' }}</p>
-            <p v-if="card.detail" class="mt-2 text-sm leading-6 text-slate-300">{{ card.detail }}</p>
+            <p class="mt-3 text-sm text-brand-200">{{ card.summary || "暂无摘要" }}</p>
+            <p v-if="card.detail" class="mt-2 text-sm leading-6 text-slate-300">
+              {{ card.detail }}
+            </p>
           </div>
         </div>
         <p v-else class="mt-4 text-sm leading-6 text-slate-300">

@@ -8,8 +8,8 @@ import {
   logBindingStates,
   resetNodeBindingCacheStates,
   resetRuntimeBindingStates,
-  runtimeState
-} from '../runtime/application-facades.js';
+  runtimeState,
+} from "../runtime/application-facades.js";
 
 function createMutableTestPartition(kernel) {
   const partition = {};
@@ -18,9 +18,9 @@ function createMutableTestPartition(kernel) {
       enumerable: true,
       configurable: false,
       get: () => kernel[name],
-      set: value => {
+      set: (value) => {
         kernel[name] = value;
-      }
+      },
     });
   }
   return partition;
@@ -28,23 +28,13 @@ function createMutableTestPartition(kernel) {
 
 export function createTestApplication() {
   const facades = createWorkerApplication({ includeTestingSupport: true });
-  const {
-    adminConsole,
-    nodeProxy,
-    scheduledMaintenance,
-    workerHandler
-  } = facades;
-  const {
-    cacheManager,
-    kernel,
-    logger,
-    shellService
-  } = facades.testingSupport;
+  const { adminConsole, nodeProxy, scheduledMaintenance, workerHandler } = facades;
+  const { cacheManager, kernel, logger, shellService } = facades.testingSupport;
   const proxyService = facades.testingSupport.proxyService;
   const routeTesting = Object.freeze({
     buildFetchRouteContext: facades.testingSupport.buildNodeRouteContext,
     buildRouteCorsResponse: facades.testingSupport.buildRouteCorsResponse,
-    isPlaybackCriticalRouteContext: facades.testingSupport.isPlaybackCriticalRouteContext
+    isPlaybackCriticalRouteContext: facades.testingSupport.isPlaybackCriticalRouteContext,
   });
   const testPlatform = Object.freeze({
     kv: createMutableTestPartition(kernel),
@@ -52,20 +42,22 @@ export function createTestApplication() {
     cache: cacheManager,
     fetch: Object.freeze({
       adminActions: kernel.adminActionHandlers,
+      adminActionNames: kernel.adminActionNames,
+      resolveAdminAction: kernel.resolveAdminAction,
       adminShell: shellService,
       fetchRequest,
       logger,
       proxyService,
-      routeTesting
+      routeTesting,
     }),
-    clock: Object.freeze({ now: () => Date.now() })
+    clock: Object.freeze({ now: () => Date.now() }),
   });
   return Object.freeze({
     adminConsole,
     nodeProxy,
     scheduledMaintenance,
     workerHandler,
-    testPlatform
+    testPlatform,
   });
 }
 

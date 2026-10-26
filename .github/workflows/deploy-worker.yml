@@ -43,8 +43,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # 同步漂移、CDN 资源策略、2 MiB 壳上限和 worker.js 新鲜度都只在本地门禁里失败；
+      # 放到部署前，才不会变成上线后管理端被 Worker 拒绝。
+      - name: Run project checks
+        run: npm run check
+
       - name: Build frontend static assets
-        run: npm run build:frontend
+        run: npm run build:cdn
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3

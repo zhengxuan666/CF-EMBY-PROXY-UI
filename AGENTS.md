@@ -25,6 +25,7 @@
 
 - Worker 生产入口只有 `worker/index.js` 的默认导出；生产 Worker 源码位于 `worker/`。
 - 生产管理端的事实来源是 `frontend/admin-runtime.template.html` 加 `frontend/scripts/admin-runtime-enhancements.mjs`；`frontend/index.html` 是组合产物。
+- `frontend/src/` 不要删除：它是线上管理台在分叉前的可读 Vue 源码，仓库内唯一的可读实现（线上只有 `admin-runtime.template.html` 里一段 651 KB 压缩 bundle）。它不参与构建，只改它不会改变线上 UI；生产 UI 只在模板链落地，并按现有断言同步到 `frontend/src/`。意义、证据与禁令见 `frontend/src/README.md`。
 - 不把密钥写入仓库、日志、测试快照或文档。使用 `.dev.vars.example`、`frontend/.env.example` 中的占位配置。
 - 保持现有层依赖：`entry -> runtime -> core/platform`；代理 `http` slice 不依赖 `playback`，`playback` 可依赖 `http`。架构检查器是最终约束。
 - 行为修改必须补充或调整对应测试，并运行最小相关检查；完成前优先运行完整 `npm.cmd run check`。
@@ -35,3 +36,5 @@
 2. 更近路径的项目指令文件（如后续新增）。
 3. 本文件的始终适用规则。
 4. `docs/` 中与任务匹配的详细说明。
+
+> 当前版本与发布内容见 README 的「当前 **V19.9**」段；本文件只保留始终适用的规则。

@@ -1,11 +1,11 @@
-import { reactive } from 'vue';
+import { reactive } from "vue";
 
-import { callAdminAction, resolveAdminLoginHref } from '@/lib/admin-api';
-import { readInlineAdminBootstrap } from '@/lib/admin-bootstrap';
-import { resolveAdminUrl, runtimeConfig } from '@/config/runtime';
+import { callAdminAction, resolveAdminLoginHref } from "@/lib/admin-api";
+import { readInlineAdminBootstrap } from "@/lib/admin-bootstrap";
+import { resolveAdminUrl, runtimeConfig } from "@/config/runtime";
 
 function isPlainObject(value) {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function normalizeAdminBootstrap(rawPayload = {}, seedBootstrap = {}) {
@@ -15,17 +15,23 @@ function normalizeAdminBootstrap(rawPayload = {}, seedBootstrap = {}) {
   return {
     ...seed,
     ...payload,
-    adminPath: String(payload.adminPath || seed.adminPath || runtimeConfig.adminPath).trim() || runtimeConfig.adminPath,
-    loginPath: String(payload.loginPath || seed.loginPath || '').trim(),
-    hostDomain: String(payload.hostDomain || seed.hostDomain || '').trim(),
-    legacyHost: String(payload.legacyHost || seed.legacyHost || '').trim(),
-    generatedAt: String(payload.generatedAt || seed.generatedAt || '').trim(),
+    adminPath:
+      String(payload.adminPath || seed.adminPath || runtimeConfig.adminPath).trim() ||
+      runtimeConfig.adminPath,
+    loginPath: String(payload.loginPath || seed.loginPath || "").trim(),
+    hostDomain: String(payload.hostDomain || seed.hostDomain || "").trim(),
+    legacyHost: String(payload.legacyHost || seed.legacyHost || "").trim(),
+    generatedAt: String(payload.generatedAt || seed.generatedAt || "").trim(),
     initHealth: isPlainObject(payload.initHealth) ? payload.initHealth : seed.initHealth || null,
-    shell: isPlainObject(payload.shell) ? payload.shell : (isPlainObject(seed.shell) ? seed.shell : null),
+    shell: isPlainObject(payload.shell)
+      ? payload.shell
+      : isPlainObject(seed.shell)
+        ? seed.shell
+        : null,
     config: isPlainObject(payload.config) ? payload.config : {},
     nodes: Array.isArray(payload.nodes) ? payload.nodes : [],
     revisions: isPlainObject(payload.revisions) ? payload.revisions : {},
-    runtimeStatus: isPlainObject(payload.runtimeStatus) ? payload.runtimeStatus : {}
+    runtimeStatus: isPlainObject(payload.runtimeStatus) ? payload.runtimeStatus : {},
   };
 }
 
@@ -36,7 +42,7 @@ function normalizeDashboardSnapshot(rawPayload = {}) {
   return {
     stats: isPlainObject(stats) ? stats : {},
     runtimeStatus: isPlainObject(payload.runtimeStatus) ? payload.runtimeStatus : {},
-    cacheMeta: isPlainObject(payload.cacheMeta) ? payload.cacheMeta : {}
+    cacheMeta: isPlainObject(payload.cacheMeta) ? payload.cacheMeta : {},
   };
 }
 
@@ -45,43 +51,52 @@ function normalizeRuntimeStatusPayload(rawPayload = {}) {
 
   return {
     status: isPlainObject(payload.status) ? payload.status : {},
-    cacheMeta: isPlainObject(payload.cacheMeta) ? payload.cacheMeta : {}
+    cacheMeta: isPlainObject(payload.cacheMeta) ? payload.cacheMeta : {},
   };
 }
 
-function normalizeWorkerPlacementEditableMode(value = '') {
-  const normalized = String(value || '').trim().toLowerCase();
-  if (normalized === 'smart') return 'smart';
-  if (normalized === 'region') return 'region';
-  return 'default';
+function normalizeWorkerPlacementEditableMode(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (normalized === "smart") return "smart";
+  if (normalized === "region") return "region";
+  return "default";
 }
 
-function normalizeWorkerPlacementCurrentMode(value = '') {
-  const normalized = String(value || '').trim().toLowerCase();
-  if (normalized === 'smart') return 'smart';
-  if (normalized === 'region') return 'region';
-  if (normalized === 'host') return 'host';
-  if (normalized === 'hostname') return 'hostname';
-  if (normalized === 'targeted') return 'targeted';
-  return 'default';
+function normalizeWorkerPlacementCurrentMode(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (normalized === "smart") return "smart";
+  if (normalized === "region") return "region";
+  if (normalized === "host") return "host";
+  if (normalized === "hostname") return "hostname";
+  if (normalized === "targeted") return "targeted";
+  return "default";
 }
 
 function normalizeWorkerPlacementOption(rawOption = {}, index = 0) {
   if (!isPlainObject(rawOption)) return null;
 
-  const value = String(rawOption.value || '').trim();
+  const value = String(rawOption.value || "").trim();
   if (!value) return null;
 
   return {
-    id: String(rawOption.id || value || `worker-placement-option-${index + 1}`).trim() || `worker-placement-option-${index + 1}`,
+    id:
+      String(rawOption.id || value || `worker-placement-option-${index + 1}`).trim() ||
+      `worker-placement-option-${index + 1}`,
     value,
-    provider: String(rawOption.provider || '').trim(),
-    providerLabel: String(rawOption.providerLabel || rawOption.provider || 'Cloudflare').trim() || 'Cloudflare',
-    region: String(rawOption.region || '').trim(),
+    provider: String(rawOption.provider || "").trim(),
+    providerLabel:
+      String(rawOption.providerLabel || rawOption.provider || "Cloudflare").trim() || "Cloudflare",
+    region: String(rawOption.region || "").trim(),
     regionLabel: String(rawOption.regionLabel || rawOption.region || value).trim() || value,
-    geoKey: String(rawOption.geoKey || '').trim(),
-    geoLabel: String(rawOption.geoLabel || '').trim(),
-    geoSortOrder: Number.isFinite(Number(rawOption.geoSortOrder)) ? Number(rawOption.geoSortOrder) : 99
+    geoKey: String(rawOption.geoKey || "").trim(),
+    geoLabel: String(rawOption.geoLabel || "").trim(),
+    geoSortOrder: Number.isFinite(Number(rawOption.geoSortOrder))
+      ? Number(rawOption.geoSortOrder)
+      : 99,
   };
 }
 
@@ -90,18 +105,18 @@ function normalizeWorkerPlacementStatus(rawPayload = {}) {
 
   return {
     configured: payload.configured === true,
-    scriptName: String(payload.scriptName || '').trim(),
-    requestHost: String(payload.requestHost || '').trim(),
+    scriptName: String(payload.scriptName || "").trim(),
+    requestHost: String(payload.requestHost || "").trim(),
     currentMode: normalizeWorkerPlacementCurrentMode(payload.currentMode),
-    currentValue: String(payload.currentValue ?? '').trim(),
-    currentTarget: String(payload.currentTarget || '').trim(),
+    currentValue: String(payload.currentValue ?? "").trim(),
+    currentTarget: String(payload.currentTarget || "").trim(),
     selectedMode: normalizeWorkerPlacementEditableMode(payload.selectedMode || payload.currentMode),
-    selectedRegion: String(payload.selectedRegion || '').trim(),
+    selectedRegion: String(payload.selectedRegion || "").trim(),
     options: (Array.isArray(payload.options) ? payload.options : [])
       .map((option, index) => normalizeWorkerPlacementOption(option, index))
       .filter(Boolean),
-    warning: String(payload.warning || '').trim(),
-    error: String(payload.error || '').trim()
+    warning: String(payload.warning || "").trim(),
+    error: String(payload.error || "").trim(),
   };
 }
 
@@ -112,27 +127,27 @@ function normalizeWorkerAndAdminIndexUpdatePayload(rawPayload = {}) {
 
   return {
     success: payload.success === true,
-    scriptName: String(payload.scriptName || '').trim(),
-    requestHost: String(payload.requestHost || '').trim(),
+    scriptName: String(payload.scriptName || "").trim(),
+    requestHost: String(payload.requestHost || "").trim(),
     worker: {
-      fileName: String(worker.fileName || '').trim(),
+      fileName: String(worker.fileName || "").trim(),
       bytes: Math.max(0, Number(worker.bytes) || 0),
-      syntax: String(worker.syntax || '').trim(),
-      modifiedOn: String(worker.modifiedOn || '').trim(),
-      etag: String(worker.etag || '').trim(),
+      syntax: String(worker.syntax || "").trim(),
+      modifiedOn: String(worker.modifiedOn || "").trim(),
+      etag: String(worker.etag || "").trim(),
       handlers: (Array.isArray(worker.handlers) ? worker.handlers : [])
-        .map((handler) => String(handler || '').trim())
+        .map((handler) => String(handler || "").trim())
         .filter(Boolean),
-      hasModules: worker.hasModules === true
+      hasModules: worker.hasModules === true,
     },
     html: {
-      fileName: String(html.fileName || '').trim(),
+      fileName: String(html.fileName || "").trim(),
       bytes: Math.max(0, Number(html.bytes) || 0),
-      revision: String(html.revision || '').trim(),
-      uploadedAt: String(html.uploadedAt || '').trim()
+      revision: String(html.revision || "").trim(),
+      uploadedAt: String(html.uploadedAt || "").trim(),
     },
     config: isPlainObject(payload.config) ? payload.config : {},
-    revisions: isPlainObject(payload.revisions) ? payload.revisions : {}
+    revisions: isPlainObject(payload.revisions) ? payload.revisions : {},
   };
 }
 
@@ -156,19 +171,25 @@ function normalizeTidyPreviewGroup(rawGroup = {}, index = 0) {
     label,
     count: Number.isFinite(rawCount) ? Math.max(0, Math.round(rawCount)) : 0,
     samples: (Array.isArray(rawGroup.samples) ? rawGroup.samples : [])
-      .map((sample) => String(sample ?? '').trim())
+      .map((sample) => String(sample ?? "").trim())
       .filter(Boolean),
     truncated: rawGroup.truncated === true,
-    note: String(rawGroup.note || '').trim()
+    note: String(rawGroup.note || "").trim(),
   };
 }
 
-function normalizeTidyPreviewPayload(rawPayload = {}, fallbackScope = 'kv') {
+function normalizeTidyPreviewPayload(rawPayload = {}, fallbackScope = "kv") {
   const payload = isPlainObject(rawPayload) ? rawPayload : {};
-  const scope = String(payload.scope || fallbackScope || 'kv').trim().toLowerCase() === 'd1' ? 'd1' : 'kv';
-  const normalizeGroupList = (groups = []) => (Array.isArray(groups) ? groups : [])
-    .map((group, index) => normalizeTidyPreviewGroup(group, index))
-    .filter(Boolean);
+  const scope =
+    String(payload.scope || fallbackScope || "kv")
+      .trim()
+      .toLowerCase() === "d1"
+      ? "d1"
+      : "kv";
+  const normalizeGroupList = (groups = []) =>
+    (Array.isArray(groups) ? groups : [])
+      .map((group, index) => normalizeTidyPreviewGroup(group, index))
+      .filter(Boolean);
 
   return {
     success: payload.success !== false,
@@ -180,8 +201,8 @@ function normalizeTidyPreviewPayload(rawPayload = {}, fallbackScope = 'kv') {
     rewriteGroups: normalizeGroupList(payload.rewriteGroups),
     preserveGroups: normalizeGroupList(payload.preserveGroups),
     warnings: (Array.isArray(payload.warnings) ? payload.warnings : [])
-      .map((warning) => String(warning || '').trim())
-      .filter(Boolean)
+      .map((warning) => String(warning || "").trim())
+      .filter(Boolean),
   };
 }
 
@@ -192,101 +213,121 @@ function normalizeNodeCollection(rawNodes = []) {
       ...node,
       lines: (Array.isArray(node.lines) ? node.lines : [])
         .filter((line) => isPlainObject(line))
-        .map((line) => ({ ...line }))
+        .map((line) => ({ ...line })),
     }));
 }
 
-function normalizeNodeName(value = '') {
-  return String(value || '').trim().toLowerCase();
+function normalizeNodeName(value = "") {
+  return String(value || "")
+    .trim()
+    .toLowerCase();
 }
 
-function getErrorMessage(error, fallbackMessage = '未知错误') {
+function getErrorMessage(error, fallbackMessage = "未知错误") {
   return String(error?.message || fallbackMessage).trim() || fallbackMessage;
 }
 
 function isAuthError(error) {
   const status = Number(error?.status) || 0;
-  const code = String(error?.code || '').trim().toUpperCase();
-  return status === 401 || code === 'UNAUTHORIZED';
+  const code = String(error?.code || "")
+    .trim()
+    .toUpperCase();
+  return status === 401 || code === "UNAUTHORIZED";
 }
 
-function normalizeLogSearchMode(value = '') {
-  return String(value || '').trim().toLowerCase() === 'like' ? 'like' : 'fts';
+function normalizeLogSearchMode(value = "") {
+  return String(value || "")
+    .trim()
+    .toLowerCase() === "like"
+    ? "like"
+    : "fts";
 }
 
-function normalizeLogRequestGroupFilter(value = '') {
-  const normalized = String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
-  if (normalized === 'playback' || normalized === 'playback_info') return 'playback_info';
-  if (normalized === 'image') return 'image';
-  if (normalized === 'api') return 'api';
-  if (normalized === 'auth') return 'auth';
-  return '';
+function normalizeLogRequestGroupFilter(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+  if (normalized === "playback" || normalized === "playback_info") return "playback_info";
+  if (normalized === "image") return "image";
+  if (normalized === "api") return "api";
+  if (normalized === "auth") return "auth";
+  return "";
 }
 
-function normalizeLogStatusGroupFilter(value = '') {
-  const normalized = String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
-  if (normalized === '4xx' || normalized === 'status_4xx') return '4xx';
-  if (normalized === '5xx' || normalized === 'status_5xx') return '5xx';
-  return '';
+function normalizeLogStatusGroupFilter(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+  if (normalized === "4xx" || normalized === "status_4xx") return "4xx";
+  if (normalized === "5xx" || normalized === "status_5xx") return "5xx";
+  return "";
 }
 
-function normalizeLogDeliveryModeFilter(value = '') {
-  const normalized = String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
-  if (normalized === 'direct') return 'direct';
-  if (normalized === 'proxy' || normalized === 'proxied') return 'proxy';
-  return '';
+function normalizeLogDeliveryModeFilter(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+  if (normalized === "direct") return "direct";
+  if (normalized === "proxy" || normalized === "proxied") return "proxy";
+  return "";
 }
 
-function normalizeLogPlaybackModeFilter(value = '') {
-  return String(value ?? '').trim();
+function normalizeLogPlaybackModeFilter(value = "") {
+  return String(value ?? "").trim();
 }
 
-function normalizeProtocolFailureReason(value = '') {
-  const normalized = String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
-  if (normalized === 'connect_timeout') return 'connect_timeout';
-  if (normalized === 'idle_timeout') return 'idle_timeout';
-  if (normalized === 'tls_handshake_failed') return 'tls_handshake_failed';
-  if (normalized === 'http_version_fallback') return 'http_version_fallback';
-  if (normalized === 'redirect_loop') return 'redirect_loop';
-  if (normalized === 'redirect_limit_exceeded') return 'redirect_limit_exceeded';
-  if (normalized === 'range_unsatisfied') return 'range_unsatisfied';
-  if (normalized === 'upstream_4xx') return 'upstream_4xx';
-  if (normalized === 'upstream_5xx') return 'upstream_5xx';
-  if (normalized === 'unknown_fetch_error') return 'unknown_fetch_error';
-  return '';
+function normalizeProtocolFailureReason(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+  if (normalized === "connect_timeout") return "connect_timeout";
+  if (normalized === "idle_timeout") return "idle_timeout";
+  if (normalized === "tls_handshake_failed") return "tls_handshake_failed";
+  if (normalized === "http_version_fallback") return "http_version_fallback";
+  if (normalized === "redirect_loop") return "redirect_loop";
+  if (normalized === "redirect_limit_exceeded") return "redirect_limit_exceeded";
+  if (normalized === "range_unsatisfied") return "range_unsatisfied";
+  if (normalized === "upstream_4xx") return "upstream_4xx";
+  if (normalized === "upstream_5xx") return "upstream_5xx";
+  if (normalized === "unknown_fetch_error") return "unknown_fetch_error";
+  return "";
 }
 
 function normalizeLogPageCursor(value = null) {
-  if (!value || typeof value !== 'object') return null;
+  if (!value || typeof value !== "object") return null;
   const timestamp = Math.floor(Number(value.timestamp));
   const id = Math.floor(Number(value.id));
   if (!Number.isFinite(timestamp) || !Number.isFinite(id) || timestamp < 0 || id < 0) return null;
   return { timestamp, id };
 }
 
-function normalizeLogDateInput(value = '') {
-  const text = String(value || '').trim();
-  return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : '';
+function normalizeLogDateInput(value = "") {
+  const text = String(value || "").trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : "";
 }
 
 function createDefaultLogsQuery() {
   return {
     page: 1,
     pageSize: 50,
-    paginationMode: 'offset',
+    paginationMode: "offset",
     pageCursor: null,
     filters: {
-      keyword: '',
-      category: '',
-      requestGroup: '',
-      statusGroup: '',
-      deliveryMode: '',
-      playbackMode: '',
-      protocolFailureReason: '',
-      searchMode: 'fts',
-      startDate: '',
-      endDate: ''
-    }
+      keyword: "",
+      category: "",
+      requestGroup: "",
+      statusGroup: "",
+      deliveryMode: "",
+      playbackMode: "",
+      protocolFailureReason: "",
+      searchMode: "fts",
+      startDate: "",
+      endDate: "",
+    },
   };
 }
 
@@ -295,29 +336,43 @@ function normalizeLogsQuery(rawQuery = {}, fallbackQuery = createDefaultLogsQuer
   const source = isPlainObject(rawQuery) ? rawQuery : {};
   const fallbackFilters = isPlainObject(fallback.filters) ? fallback.filters : {};
   const sourceFilters = isPlainObject(source.filters) ? source.filters : {};
-  const paginationMode = String(source.paginationMode ?? fallback.paginationMode ?? 'offset').trim().toLowerCase() === 'seek'
-    ? 'seek'
-    : 'offset';
+  const paginationMode =
+    String(source.paginationMode ?? fallback.paginationMode ?? "offset")
+      .trim()
+      .toLowerCase() === "seek"
+      ? "seek"
+      : "offset";
 
   return {
     page: Math.max(1, parseInt(source.page ?? fallback.page, 10) || 1),
     pageSize: Math.min(200, Math.max(1, parseInt(source.pageSize ?? fallback.pageSize, 10) || 50)),
     paginationMode,
-    pageCursor: paginationMode === 'seek'
-      ? normalizeLogPageCursor(source.pageCursor ?? fallback.pageCursor)
-      : null,
+    pageCursor:
+      paginationMode === "seek"
+        ? normalizeLogPageCursor(source.pageCursor ?? fallback.pageCursor)
+        : null,
     filters: {
-      keyword: String(sourceFilters.keyword ?? fallbackFilters.keyword ?? '').trim(),
-      category: String(sourceFilters.category ?? fallbackFilters.category ?? '').trim(),
-      requestGroup: normalizeLogRequestGroupFilter(sourceFilters.requestGroup ?? fallbackFilters.requestGroup),
-      statusGroup: normalizeLogStatusGroupFilter(sourceFilters.statusGroup ?? fallbackFilters.statusGroup),
-      deliveryMode: normalizeLogDeliveryModeFilter(sourceFilters.deliveryMode ?? fallbackFilters.deliveryMode),
-      playbackMode: normalizeLogPlaybackModeFilter(sourceFilters.playbackMode ?? fallbackFilters.playbackMode),
-      protocolFailureReason: normalizeProtocolFailureReason(sourceFilters.protocolFailureReason ?? fallbackFilters.protocolFailureReason),
+      keyword: String(sourceFilters.keyword ?? fallbackFilters.keyword ?? "").trim(),
+      category: String(sourceFilters.category ?? fallbackFilters.category ?? "").trim(),
+      requestGroup: normalizeLogRequestGroupFilter(
+        sourceFilters.requestGroup ?? fallbackFilters.requestGroup,
+      ),
+      statusGroup: normalizeLogStatusGroupFilter(
+        sourceFilters.statusGroup ?? fallbackFilters.statusGroup,
+      ),
+      deliveryMode: normalizeLogDeliveryModeFilter(
+        sourceFilters.deliveryMode ?? fallbackFilters.deliveryMode,
+      ),
+      playbackMode: normalizeLogPlaybackModeFilter(
+        sourceFilters.playbackMode ?? fallbackFilters.playbackMode,
+      ),
+      protocolFailureReason: normalizeProtocolFailureReason(
+        sourceFilters.protocolFailureReason ?? fallbackFilters.protocolFailureReason,
+      ),
       searchMode: normalizeLogSearchMode(sourceFilters.searchMode ?? fallbackFilters.searchMode),
       startDate: normalizeLogDateInput(sourceFilters.startDate ?? fallbackFilters.startDate),
-      endDate: normalizeLogDateInput(sourceFilters.endDate ?? fallbackFilters.endDate)
-    }
+      endDate: normalizeLogDateInput(sourceFilters.endDate ?? fallbackFilters.endDate),
+    },
   };
 }
 
@@ -328,89 +383,113 @@ function createEmptyLogsState() {
     totalPages: 1,
     page: 1,
     pageSize: 50,
-    paginationMode: 'offset',
+    paginationMode: "offset",
     pageCursor: null,
     range: {
-      startDate: '',
-      endDate: ''
+      startDate: "",
+      endDate: "",
     },
-    searchMode: 'fts',
-    effectiveSearchMode: 'fts',
-    searchFallbackReason: '',
+    searchMode: "fts",
+    effectiveSearchMode: "fts",
+    searchFallbackReason: "",
     totalExact: true,
     hasPrevPage: false,
     hasNextPage: false,
     nextCursor: null,
     disabled: false,
     revisions: {
-      logsRevision: ''
+      logsRevision: "",
     },
-    lastFetchedAt: ''
+    lastFetchedAt: "",
   };
 }
 
-function normalizeDnsIpValue(value = '') {
-  return String(value || '').trim();
+function normalizeDnsIpValue(value = "") {
+  return String(value || "").trim();
 }
 
-function normalizeDnsIpItemType(value = '') {
-  const normalized = String(value || '').trim().toLowerCase();
-  if (normalized === 'ipv6') return 'IPv6';
-  if (normalized === 'ipv4') return 'IPv4';
-  return '';
+function normalizeDnsIpItemType(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (normalized === "ipv6") return "IPv6";
+  if (normalized === "ipv4") return "IPv4";
+  return "";
 }
 
-function normalizeDnsIpProbeStatus(value = '') {
-  const normalized = String(value || '').trim().toLowerCase();
-  if (normalized === 'ok') return 'ok';
-  if (normalized === 'pending') return 'pending';
-  if (normalized === 'cf_header_missing') return 'cf_header_missing';
-  if (normalized === 'non_cloudflare') return 'non_cloudflare';
-  if (normalized === 'timeout') return 'timeout';
-  if (normalized === 'network_error') return 'network_error';
-  return normalized ? 'network_error' : '';
+function normalizeDnsIpProbeStatus(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (normalized === "ok") return "ok";
+  if (normalized === "pending") return "pending";
+  if (normalized === "cf_header_missing") return "cf_header_missing";
+  if (normalized === "non_cloudflare") return "non_cloudflare";
+  if (normalized === "timeout") return "timeout";
+  if (normalized === "network_error") return "network_error";
+  return normalized ? "network_error" : "";
 }
 
-function normalizeDnsIpSourceType(value = '') {
-  return String(value || '').trim().toLowerCase() === 'domain' ? 'domain' : 'url';
+function normalizeDnsIpSourceType(value = "") {
+  return String(value || "")
+    .trim()
+    .toLowerCase() === "domain"
+    ? "domain"
+    : "url";
 }
 
-function normalizeDnsIpSourceKind(value = '') {
-  return String(value || '').trim().toLowerCase();
+function normalizeDnsIpSourceKind(value = "") {
+  return String(value || "")
+    .trim()
+    .toLowerCase();
 }
 
-function normalizeDnsIpSourceFetchStatus(value = '') {
-  const normalized = String(value || '').trim().toLowerCase();
-  if (normalized === 'success') return 'success';
-  if (normalized === 'failed') return 'failed';
-  return normalized === 'empty' ? 'empty' : '';
+function normalizeDnsIpSourceFetchStatus(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (normalized === "success") return "success";
+  if (normalized === "failed") return "failed";
+  return normalized === "empty" ? "empty" : "";
 }
 
-function normalizeDnsIpWorkspaceProbeDataSource(value = '') {
-  const normalized = String(value || '').trim().toLowerCase();
-  if (normalized === 'live_deferred') return 'live_deferred';
-  if (normalized === 'live_sync') return 'live_sync';
-  return 'cache';
+function normalizeDnsIpWorkspaceProbeDataSource(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (normalized === "live_deferred") return "live_deferred";
+  if (normalized === "live_sync") return "live_sync";
+  return "cache";
 }
 
-function normalizeDnsIpSourceSnapshotStatus(value = '') {
-  const normalized = String(value || '').trim().toLowerCase();
-  if (normalized === 'live_sync') return 'live_sync';
-  if (normalized === 'live_deferred') return 'live_deferred';
-  return normalized === 'cache' ? 'cache' : 'empty';
+function normalizeDnsIpSourceSnapshotStatus(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (normalized === "live_sync") return "live_sync";
+  if (normalized === "live_deferred") return "live_deferred";
+  return normalized === "cache" ? "cache" : "empty";
 }
 
-function normalizeDnsRecordMode(value = '') {
-  return String(value || '').trim().toLowerCase() === 'a' ? 'a' : 'cname';
+function normalizeDnsRecordMode(value = "") {
+  return String(value || "")
+    .trim()
+    .toLowerCase() === "a"
+    ? "a"
+    : "cname";
 }
 
-function normalizeDnsRecordType(value = '', fallbackType = '') {
-  const normalizedFallback = String(fallbackType || '').trim().toUpperCase();
-  const normalizedValue = String(value || '').trim().toUpperCase();
+function normalizeDnsRecordType(value = "", fallbackType = "") {
+  const normalizedFallback = String(fallbackType || "")
+    .trim()
+    .toUpperCase();
+  const normalizedValue = String(value || "")
+    .trim()
+    .toUpperCase();
   const resolvedValue = normalizedValue || normalizedFallback;
-  if (resolvedValue === 'AAAA') return 'AAAA';
-  if (resolvedValue === 'CNAME') return 'CNAME';
-  return resolvedValue === 'A' ? 'A' : '';
+  if (resolvedValue === "AAAA") return "AAAA";
+  if (resolvedValue === "CNAME") return "CNAME";
+  return resolvedValue === "A" ? "A" : "";
 }
 
 function createEmptyDnsIpWorkspaceSummaryBlock() {
@@ -419,22 +498,22 @@ function createEmptyDnsIpWorkspaceSummaryBlock() {
     ipv4Count: 0,
     ipv6Count: 0,
     countryCount: 0,
-    coloCount: 0
+    coloCount: 0,
   };
 }
 
 function createEmptyDnsIpWorkspaceState() {
   return {
-    zoneId: '',
-    zoneName: '',
-    host: '',
-    requestColo: '',
-    probeEntryColo: '',
-    probeDataSource: 'cache',
-    sourceSnapshotStatus: 'empty',
+    zoneId: "",
+    zoneName: "",
+    host: "",
+    requestColo: "",
+    probeEntryColo: "",
+    probeDataSource: "cache",
+    sourceSnapshotStatus: "empty",
     backgroundRefreshQueued: false,
-    requestCountryCode: '',
-    requestCountryName: '',
+    requestCountryCode: "",
+    requestCountryName: "",
     currentHostItems: [],
     sharedPoolItems: [],
     sourceList: [],
@@ -442,29 +521,29 @@ function createEmptyDnsIpWorkspaceState() {
     summary: {
       currentHost: createEmptyDnsIpWorkspaceSummaryBlock(),
       sharedPool: createEmptyDnsIpWorkspaceSummaryBlock(),
-      combined: createEmptyDnsIpWorkspaceSummaryBlock()
+      combined: createEmptyDnsIpWorkspaceSummaryBlock(),
     },
-    dnsIpPoolRevision: '',
-    generatedAt: '',
+    dnsIpPoolRevision: "",
+    generatedAt: "",
     builtInSourceOptions: [],
     presetList: [],
     preferredDomainLinks: [],
     preferredIpLinks: [],
     revisions: {},
-    lastFetchedAt: ''
+    lastFetchedAt: "",
   };
 }
 
 function createEmptyDnsIpPoolSourcesState() {
   return {
     sourceList: [],
-    dnsIpPoolRevision: '',
+    dnsIpPoolRevision: "",
     builtInSourceOptions: [],
     presetList: [],
     preferredDomainLinks: [],
     preferredIpLinks: [],
     revisions: {},
-    lastFetchedAt: ''
+    lastFetchedAt: "",
   };
 }
 
@@ -473,33 +552,33 @@ function createEmptyDnsIpPoolRefreshState() {
     sourceResults: [],
     items: [],
     importedCount: 0,
-    cacheStatus: '',
+    cacheStatus: "",
     backgroundRefreshQueued: false,
-    cachedAt: '',
-    expiresAt: '',
-    dnsIpPoolRevision: '',
+    cachedAt: "",
+    expiresAt: "",
+    dnsIpPoolRevision: "",
     sourceList: [],
     revisions: {},
-    lastFetchedAt: ''
+    lastFetchedAt: "",
   };
 }
 
 function createEmptyDnsImportPreviewState() {
   return {
-    sourceKind: 'manual',
-    sourceLabel: '',
+    sourceKind: "manual",
+    sourceLabel: "",
     importedCount: 0,
     items: [],
     revisions: {},
-    lastImportedAt: ''
+    lastImportedAt: "",
   };
 }
 
 function createEmptyDnsRecordState() {
   return {
-    zoneId: '',
-    zoneName: '',
-    currentHost: '',
+    zoneId: "",
+    zoneName: "",
+    currentHost: "",
     totalRecords: 0,
     editableRecordCount: 0,
     filteredCount: 0,
@@ -507,12 +586,12 @@ function createEmptyDnsRecordState() {
     allRecords: [],
     allRecordsIncluded: false,
     history: [],
-    mode: 'a',
+    mode: "a",
     syncSummary: null,
     rollbackAttempted: false,
     rollbackSucceeded: false,
-    rollbackError: '',
-    lastFetchedAt: ''
+    rollbackError: "",
+    lastFetchedAt: "",
   };
 }
 
@@ -523,7 +602,7 @@ function normalizeDnsIpWorkspaceSummaryBlock(rawBlock = {}) {
     ipv4Count: Math.max(0, parseInt(block.ipv4Count, 10) || 0),
     ipv6Count: Math.max(0, parseInt(block.ipv6Count, 10) || 0),
     countryCount: Math.max(0, parseInt(block.countryCount, 10) || 0),
-    coloCount: Math.max(0, parseInt(block.coloCount, 10) || 0)
+    coloCount: Math.max(0, parseInt(block.coloCount, 10) || 0),
   };
 }
 
@@ -555,7 +634,7 @@ function normalizeDnsIpWorkspaceItem(rawItem = {}, index = 0) {
     cityName: normalizeDnsIpValue(rawItem.cityName || rawItem.city_name),
     countryCode: normalizeDnsIpValue(rawItem.countryCode || rawItem.country_code).toUpperCase(),
     countryName: normalizeDnsIpValue(rawItem.countryName || rawItem.country_name),
-    probedAt: normalizeDnsIpValue(rawItem.probedAt || rawItem.probed_at)
+    probedAt: normalizeDnsIpValue(rawItem.probedAt || rawItem.probed_at),
   };
 }
 
@@ -565,7 +644,7 @@ function normalizeDnsIpPoolSource(rawSource = {}, index = 0) {
   const sourceType = normalizeDnsIpSourceType(rawSource.sourceType || rawSource.source_type);
   const url = normalizeDnsIpValue(rawSource.url);
   const domain = normalizeDnsIpValue(rawSource.domain);
-  const targetValue = sourceType === 'domain' ? domain : url;
+  const targetValue = sourceType === "domain" ? domain : url;
   if (!targetValue) return null;
 
   const countValue = Number(rawSource.lastFetchCount ?? rawSource.last_fetch_count);
@@ -579,15 +658,20 @@ function normalizeDnsIpPoolSource(rawSource = {}, index = 0) {
     sourceKind: normalizeDnsIpSourceKind(rawSource.sourceKind || rawSource.source_kind),
     presetId: normalizeDnsIpValue(rawSource.presetId || rawSource.preset_id),
     builtinId: normalizeDnsIpValue(rawSource.builtinId || rawSource.builtin_id),
-    enabled: rawSource.enabled !== false && rawSource.enabled !== 0 && String(rawSource.enabled ?? '1').trim() !== '0',
+    enabled:
+      rawSource.enabled !== false &&
+      rawSource.enabled !== 0 &&
+      String(rawSource.enabled ?? "1").trim() !== "0",
     sortOrder: Math.max(0, parseInt(rawSource.sortOrder ?? rawSource.sort_order, 10) || index),
     ipLimit: Math.max(0, parseInt(rawSource.ipLimit ?? rawSource.ip_limit, 10) || 0),
     lastFetchAt: normalizeDnsIpValue(rawSource.lastFetchAt || rawSource.last_fetch_at),
-    lastFetchStatus: normalizeDnsIpSourceFetchStatus(rawSource.lastFetchStatus || rawSource.last_fetch_status),
+    lastFetchStatus: normalizeDnsIpSourceFetchStatus(
+      rawSource.lastFetchStatus || rawSource.last_fetch_status,
+    ),
     lastFetchCount: Number.isFinite(countValue) ? Math.max(0, Math.round(countValue)) : 0,
     createdAt: normalizeDnsIpValue(rawSource.createdAt || rawSource.created_at),
     updatedAt: normalizeDnsIpValue(rawSource.updatedAt || rawSource.updated_at),
-    targetValue
+    targetValue,
   };
 }
 
@@ -603,7 +687,7 @@ function normalizeDnsIpSourceOption(rawOption = {}) {
     id,
     label,
     sourceType: normalizeDnsIpSourceType(rawOption.sourceType),
-    value
+    value,
   };
 }
 
@@ -617,7 +701,7 @@ function normalizeDnsIpLink(rawLink = {}) {
   return {
     ...rawLink,
     label,
-    href
+    href,
   };
 }
 
@@ -630,13 +714,17 @@ function normalizeDnsIpCountrySummary(rawCountry = {}) {
 
   return {
     code,
-    name: normalizeDnsIpValue(rawCountry.name) || '未知',
-    count
+    name: normalizeDnsIpValue(rawCountry.name) || "未知",
+    count,
   };
 }
 
-function normalizeDnsIpPoolRefreshCacheStatus(value = '') {
-  return String(value || '').trim().toLowerCase() === 'live' ? 'live' : 'd1';
+function normalizeDnsIpPoolRefreshCacheStatus(value = "") {
+  return String(value || "")
+    .trim()
+    .toLowerCase() === "live"
+    ? "live"
+    : "d1";
 }
 
 function normalizeDnsIpPoolRefreshSourceResult(rawResult = {}, index = 0) {
@@ -654,42 +742,68 @@ function normalizeDnsIpPoolRefreshSourceResult(rawResult = {}, index = 0) {
       .map((item, itemIndex) => normalizeDnsIpWorkspaceItem(item, itemIndex))
       .filter(Boolean),
     error: normalizeDnsIpValue(rawResult.error),
-    lastFetchAt: normalizeDnsIpValue(rawResult.lastFetchAt || rawResult.last_fetch_at)
+    lastFetchAt: normalizeDnsIpValue(rawResult.lastFetchAt || rawResult.last_fetch_at),
   };
 }
 
-function normalizeDnsIpPoolSourcesPayload(rawPayload = {}, fallbackState = createEmptyDnsIpPoolSourcesState()) {
+function normalizeDnsIpPoolSourcesPayload(
+  rawPayload = {},
+  fallbackState = createEmptyDnsIpPoolSourcesState(),
+) {
   const payload = isPlainObject(rawPayload) ? rawPayload : {};
-  const fallback = isPlainObject(fallbackState) ? fallbackState : createEmptyDnsIpPoolSourcesState();
+  const fallback = isPlainObject(fallbackState)
+    ? fallbackState
+    : createEmptyDnsIpPoolSourcesState();
 
   return {
     sourceList: (Array.isArray(payload.sourceList) ? payload.sourceList : fallback.sourceList)
       .map((source, index) => normalizeDnsIpPoolSource(source, index))
       .filter(Boolean),
     dnsIpPoolRevision: normalizeDnsIpValue(payload.dnsIpPoolRevision || fallback.dnsIpPoolRevision),
-    builtInSourceOptions: (Array.isArray(payload.builtInSourceOptions) ? payload.builtInSourceOptions : fallback.builtInSourceOptions)
+    builtInSourceOptions: (Array.isArray(payload.builtInSourceOptions)
+      ? payload.builtInSourceOptions
+      : fallback.builtInSourceOptions
+    )
       .map(normalizeDnsIpSourceOption)
       .filter(Boolean),
     presetList: (Array.isArray(payload.presetList) ? payload.presetList : fallback.presetList)
       .map(normalizeDnsIpSourceOption)
       .filter(Boolean),
-    preferredDomainLinks: (Array.isArray(payload.preferredDomainLinks) ? payload.preferredDomainLinks : fallback.preferredDomainLinks)
+    preferredDomainLinks: (Array.isArray(payload.preferredDomainLinks)
+      ? payload.preferredDomainLinks
+      : fallback.preferredDomainLinks
+    )
       .map(normalizeDnsIpLink)
       .filter(Boolean),
-    preferredIpLinks: (Array.isArray(payload.preferredIpLinks) ? payload.preferredIpLinks : fallback.preferredIpLinks)
+    preferredIpLinks: (Array.isArray(payload.preferredIpLinks)
+      ? payload.preferredIpLinks
+      : fallback.preferredIpLinks
+    )
       .map(normalizeDnsIpLink)
       .filter(Boolean),
-    revisions: isPlainObject(payload.revisions) ? payload.revisions : (isPlainObject(fallback.revisions) ? fallback.revisions : {}),
-    lastFetchedAt: new Date().toISOString()
+    revisions: isPlainObject(payload.revisions)
+      ? payload.revisions
+      : isPlainObject(fallback.revisions)
+        ? fallback.revisions
+        : {},
+    lastFetchedAt: new Date().toISOString(),
   };
 }
 
-function normalizeDnsIpPoolRefreshPayload(rawPayload = {}, fallbackState = createEmptyDnsIpPoolRefreshState()) {
+function normalizeDnsIpPoolRefreshPayload(
+  rawPayload = {},
+  fallbackState = createEmptyDnsIpPoolRefreshState(),
+) {
   const payload = isPlainObject(rawPayload) ? rawPayload : {};
-  const fallback = isPlainObject(fallbackState) ? fallbackState : createEmptyDnsIpPoolRefreshState();
+  const fallback = isPlainObject(fallbackState)
+    ? fallbackState
+    : createEmptyDnsIpPoolRefreshState();
 
   return {
-    sourceResults: (Array.isArray(payload.sourceResults) ? payload.sourceResults : fallback.sourceResults)
+    sourceResults: (Array.isArray(payload.sourceResults)
+      ? payload.sourceResults
+      : fallback.sourceResults
+    )
       .map((result, index) => normalizeDnsIpPoolRefreshSourceResult(result, index))
       .filter(Boolean),
     items: (Array.isArray(payload.items) ? payload.items : fallback.items)
@@ -698,10 +812,10 @@ function normalizeDnsIpPoolRefreshPayload(rawPayload = {}, fallbackState = creat
     importedCount: Math.max(
       0,
       parseInt(
-        payload.importedCount
-        ?? (Array.isArray(payload.items) ? payload.items.length : fallback.importedCount),
-        10
-      ) || 0
+        payload.importedCount ??
+          (Array.isArray(payload.items) ? payload.items.length : fallback.importedCount),
+        10,
+      ) || 0,
     ),
     cacheStatus: normalizeDnsIpPoolRefreshCacheStatus(payload.cacheStatus || fallback.cacheStatus),
     backgroundRefreshQueued: payload.backgroundRefreshQueued === true,
@@ -711,14 +825,23 @@ function normalizeDnsIpPoolRefreshPayload(rawPayload = {}, fallbackState = creat
     sourceList: (Array.isArray(payload.sourceList) ? payload.sourceList : fallback.sourceList)
       .map((source, index) => normalizeDnsIpPoolSource(source, index))
       .filter(Boolean),
-    revisions: isPlainObject(payload.revisions) ? payload.revisions : (isPlainObject(fallback.revisions) ? fallback.revisions : {}),
-    lastFetchedAt: new Date().toISOString()
+    revisions: isPlainObject(payload.revisions)
+      ? payload.revisions
+      : isPlainObject(fallback.revisions)
+        ? fallback.revisions
+        : {},
+    lastFetchedAt: new Date().toISOString(),
   };
 }
 
-function normalizeDnsIpWorkspacePayload(rawPayload = {}, fallbackSourcesState = createEmptyDnsIpPoolSourcesState()) {
+function normalizeDnsIpWorkspacePayload(
+  rawPayload = {},
+  fallbackSourcesState = createEmptyDnsIpPoolSourcesState(),
+) {
   const payload = isPlainObject(rawPayload) ? rawPayload : {};
-  const fallbackSources = isPlainObject(fallbackSourcesState) ? fallbackSourcesState : createEmptyDnsIpPoolSourcesState();
+  const fallbackSources = isPlainObject(fallbackSourcesState)
+    ? fallbackSourcesState
+    : createEmptyDnsIpPoolSourcesState();
   const sourcesState = normalizeDnsIpPoolSourcesPayload(payload, fallbackSources);
 
   return {
@@ -739,22 +862,27 @@ function normalizeDnsIpWorkspacePayload(rawPayload = {}, fallbackSourcesState = 
       .map((item, index) => normalizeDnsIpWorkspaceItem(item, index))
       .filter(Boolean),
     sourceList: sourcesState.sourceList,
-    availableCountries: (Array.isArray(payload.availableCountries) ? payload.availableCountries : [])
+    availableCountries: (Array.isArray(payload.availableCountries)
+      ? payload.availableCountries
+      : []
+    )
       .map(normalizeDnsIpCountrySummary)
       .filter(Boolean),
     summary: {
       currentHost: normalizeDnsIpWorkspaceSummaryBlock(payload?.summary?.currentHost),
       sharedPool: normalizeDnsIpWorkspaceSummaryBlock(payload?.summary?.sharedPool),
-      combined: normalizeDnsIpWorkspaceSummaryBlock(payload?.summary?.combined)
+      combined: normalizeDnsIpWorkspaceSummaryBlock(payload?.summary?.combined),
     },
-    dnsIpPoolRevision: normalizeDnsIpValue(payload.dnsIpPoolRevision || sourcesState.dnsIpPoolRevision),
+    dnsIpPoolRevision: normalizeDnsIpValue(
+      payload.dnsIpPoolRevision || sourcesState.dnsIpPoolRevision,
+    ),
     generatedAt: normalizeDnsIpValue(payload.generatedAt),
     builtInSourceOptions: sourcesState.builtInSourceOptions,
     presetList: sourcesState.presetList,
     preferredDomainLinks: sourcesState.preferredDomainLinks,
     preferredIpLinks: sourcesState.preferredIpLinks,
     revisions: isPlainObject(payload.revisions) ? payload.revisions : sourcesState.revisions,
-    lastFetchedAt: new Date().toISOString()
+    lastFetchedAt: new Date().toISOString(),
   };
 }
 
@@ -762,23 +890,23 @@ function sortDnsEditableRecords(records = []) {
   const typeOrder = {
     CNAME: 0,
     A: 1,
-    AAAA: 2
+    AAAA: 2,
   };
 
   return [...(Array.isArray(records) ? records : [])].sort((left, right) => {
-    const leftType = normalizeDnsRecordType(left?.type, 'A');
-    const rightType = normalizeDnsRecordType(right?.type, 'A');
+    const leftType = normalizeDnsRecordType(left?.type, "A");
+    const rightType = normalizeDnsRecordType(right?.type, "A");
     const typeDiff = (typeOrder[leftType] ?? 9) - (typeOrder[rightType] ?? 9);
     if (typeDiff !== 0) return typeDiff;
-    return String(left?.content || '').localeCompare(String(right?.content || ''));
+    return String(left?.content || "").localeCompare(String(right?.content || ""));
   });
 }
 
 function normalizeDnsEditableRecord(rawRecord = {}, index = 0) {
   if (!isPlainObject(rawRecord)) return null;
 
-  const type = normalizeDnsRecordType(rawRecord.type, '');
-  const content = String(rawRecord.content || '').trim();
+  const type = normalizeDnsRecordType(rawRecord.type, "");
+  const content = String(rawRecord.content || "").trim();
   if (!type || !content) return null;
 
   return {
@@ -787,16 +915,16 @@ function normalizeDnsEditableRecord(rawRecord = {}, index = 0) {
     name: normalizeDnsIpValue(rawRecord.name || rawRecord.host),
     content,
     ttl: Math.max(1, parseInt(rawRecord.ttl, 10) || 1),
-    proxied: rawRecord.proxied === true
+    proxied: rawRecord.proxied === true,
   };
 }
 
 function normalizeDnsRecordHistoryEntry(rawEntry = {}, index = 0) {
   if (!isPlainObject(rawEntry)) return null;
 
-  const type = normalizeDnsRecordType(rawEntry.type, '');
-  const content = String(rawEntry.content || '').trim();
-  if (type !== 'CNAME' || !content) return null;
+  const type = normalizeDnsRecordType(rawEntry.type, "");
+  const content = String(rawEntry.content || "").trim();
+  if (type !== "CNAME" || !content) return null;
 
   return {
     id: normalizeDnsIpValue(rawEntry.id || `dns-history-${index + 1}`),
@@ -804,19 +932,23 @@ function normalizeDnsRecordHistoryEntry(rawEntry = {}, index = 0) {
     type,
     content,
     savedAt: normalizeDnsIpValue(rawEntry.savedAt || rawEntry.updatedAt || rawEntry.createdAt),
-    actor: normalizeDnsIpValue(rawEntry.actor) || 'admin',
-    source: normalizeDnsIpValue(rawEntry.source) || 'ui',
+    actor: normalizeDnsIpValue(rawEntry.actor) || "admin",
+    source: normalizeDnsIpValue(rawEntry.source) || "ui",
     requestHost: normalizeDnsIpValue(rawEntry.requestHost),
-    preferredFallback: rawEntry.preferredFallback === true
+    preferredFallback: rawEntry.preferredFallback === true,
   };
 }
 
-function inferDnsRecordMode(records = [], fallbackMode = 'a') {
+function inferDnsRecordMode(records = [], fallbackMode = "a") {
   const normalizedRecords = Array.isArray(records) ? records : [];
-  const hasAddressRecords = normalizedRecords.some((record) => ['A', 'AAAA'].includes(normalizeDnsRecordType(record?.type, '')));
-  const hasCnameRecords = normalizedRecords.some((record) => normalizeDnsRecordType(record?.type, '') === 'CNAME');
-  if (hasCnameRecords && !hasAddressRecords) return 'cname';
-  if (hasAddressRecords) return 'a';
+  const hasAddressRecords = normalizedRecords.some((record) =>
+    ["A", "AAAA"].includes(normalizeDnsRecordType(record?.type, "")),
+  );
+  const hasCnameRecords = normalizedRecords.some(
+    (record) => normalizeDnsRecordType(record?.type, "") === "CNAME",
+  );
+  if (hasCnameRecords && !hasAddressRecords) return "cname";
+  if (hasAddressRecords) return "a";
   return normalizeDnsRecordMode(fallbackMode);
 }
 
@@ -832,42 +964,55 @@ function normalizeDnsRecordSyncSummary(rawSummary = null) {
     deletedCount: Math.max(0, parseInt(rawSummary.deletedCount, 10) || 0),
     changedCount: Math.max(0, parseInt(rawSummary.changedCount, 10) || 0),
     dedupedDesiredCount: Math.max(0, parseInt(rawSummary.dedupedDesiredCount, 10) || 0),
-    unchangedOnly: rawSummary.unchangedOnly === true
+    unchangedOnly: rawSummary.unchangedOnly === true,
   };
 }
 
-function normalizeDnsImportPreviewPayload(rawPayload = {}, fallbackState = createEmptyDnsImportPreviewState()) {
+function normalizeDnsImportPreviewPayload(
+  rawPayload = {},
+  fallbackState = createEmptyDnsImportPreviewState(),
+) {
   const payload = isPlainObject(rawPayload) ? rawPayload : {};
-  const fallback = isPlainObject(fallbackState) ? fallbackState : createEmptyDnsImportPreviewState();
+  const fallback = isPlainObject(fallbackState)
+    ? fallbackState
+    : createEmptyDnsImportPreviewState();
 
   return {
-    sourceKind: normalizeDnsIpValue(payload.sourceKind || fallback.sourceKind) || 'manual',
+    sourceKind: normalizeDnsIpValue(payload.sourceKind || fallback.sourceKind) || "manual",
     sourceLabel: normalizeDnsIpValue(payload.sourceLabel || fallback.sourceLabel),
     importedCount: Math.max(
       0,
-      parseInt(payload.importedCount ?? (Array.isArray(payload.items) ? payload.items.length : fallback.importedCount), 10) || 0
+      parseInt(
+        payload.importedCount ??
+          (Array.isArray(payload.items) ? payload.items.length : fallback.importedCount),
+        10,
+      ) || 0,
     ),
     items: (Array.isArray(payload.items) ? payload.items : fallback.items)
       .map((item, index) => normalizeDnsIpWorkspaceItem(item, index))
       .filter(Boolean),
-    revisions: isPlainObject(payload.revisions) ? payload.revisions : (isPlainObject(fallback.revisions) ? fallback.revisions : {}),
-    lastImportedAt: new Date().toISOString()
+    revisions: isPlainObject(payload.revisions)
+      ? payload.revisions
+      : isPlainObject(fallback.revisions)
+        ? fallback.revisions
+        : {},
+    lastImportedAt: new Date().toISOString(),
   };
 }
 
-function normalizeDnsRecordPayloadForSave(rawRecord = {}, mode = 'a') {
+function normalizeDnsRecordPayloadForSave(rawRecord = {}, mode = "a") {
   const record = isPlainObject(rawRecord) ? rawRecord : {};
   const normalizedMode = normalizeDnsRecordMode(mode);
-  const content = String(record.content || '').trim();
-  const type = normalizeDnsRecordType(record.type, normalizedMode === 'cname' ? 'CNAME' : 'A');
+  const content = String(record.content || "").trim();
+  const type = normalizeDnsRecordType(record.type, normalizedMode === "cname" ? "CNAME" : "A");
 
   if (!content) return null;
-  if (normalizedMode === 'cname') return { type: 'CNAME', content };
-  if (!['A', 'AAAA'].includes(type)) return null;
+  if (normalizedMode === "cname") return { type: "CNAME", content };
+  if (!["A", "AAAA"].includes(type)) return null;
 
   return {
     type,
-    content
+    content,
   };
 }
 
@@ -875,7 +1020,7 @@ function normalizeDnsRecordPayloadForUpsert(rawRecord = {}, options = {}) {
   const record = isPlainObject(rawRecord) ? rawRecord : {};
   const recordId = normalizeDnsIpValue(options.recordId || record.recordId || record.id);
   const host = normalizeDnsIpValue(options.host || record.host || record.name);
-  const type = normalizeDnsRecordType(options.type || record.type, '');
+  const type = normalizeDnsRecordType(options.type || record.type, "");
   const content = normalizeDnsIpValue(options.content || record.content);
 
   return {
@@ -883,7 +1028,7 @@ function normalizeDnsRecordPayloadForUpsert(rawRecord = {}, options = {}) {
     ...(host ? { host } : {}),
     ...(type ? { type } : {}),
     ...(content ? { content } : {}),
-    ...(options.skipHistory === true ? { skipHistory: true } : {})
+    ...(options.skipHistory === true ? { skipHistory: true } : {}),
   };
 }
 
@@ -893,13 +1038,14 @@ function normalizeDnsRecordsPayload(rawPayload = {}, fallbackState = createEmpty
   const normalizedRecords = sortDnsEditableRecords(
     (Array.isArray(payload.records) ? payload.records : fallback.records)
       .map((record, index) => normalizeDnsEditableRecord(record, index))
-      .filter(Boolean)
+      .filter(Boolean),
   );
-  const hasAllRecordsPayload = payload.allRecordsIncluded === true || Array.isArray(payload.allRecords);
+  const hasAllRecordsPayload =
+    payload.allRecordsIncluded === true || Array.isArray(payload.allRecords);
   const normalizedAllRecords = sortDnsEditableRecords(
     (hasAllRecordsPayload ? payload.allRecords : fallback.allRecords)
       .map((record, index) => normalizeDnsEditableRecord(record, index))
-      .filter(Boolean)
+      .filter(Boolean),
   );
 
   return {
@@ -909,11 +1055,15 @@ function normalizeDnsRecordsPayload(rawPayload = {}, fallbackState = createEmpty
     totalRecords: Math.max(0, parseInt(payload.totalRecords ?? fallback.totalRecords, 10) || 0),
     editableRecordCount: Math.max(
       0,
-      parseInt(payload.editableRecordCount ?? normalizedAllRecords.length ?? fallback.editableRecordCount, 10) || 0
+      parseInt(
+        payload.editableRecordCount ?? normalizedAllRecords.length ?? fallback.editableRecordCount,
+        10,
+      ) || 0,
     ),
     filteredCount: Math.max(
       0,
-      parseInt(payload.filteredCount ?? normalizedRecords.length ?? fallback.filteredCount, 10) || 0
+      parseInt(payload.filteredCount ?? normalizedRecords.length ?? fallback.filteredCount, 10) ||
+        0,
     ),
     records: normalizedRecords,
     allRecords: normalizedAllRecords,
@@ -926,7 +1076,7 @@ function normalizeDnsRecordsPayload(rawPayload = {}, fallbackState = createEmpty
     rollbackAttempted: payload.rollbackAttempted === true,
     rollbackSucceeded: payload.rollbackSucceeded === true,
     rollbackError: normalizeDnsIpValue(payload.rollbackError || fallback.rollbackError),
-    lastFetchedAt: new Date().toISOString()
+    lastFetchedAt: new Date().toISOString(),
   };
 }
 
@@ -935,29 +1085,36 @@ function normalizeLogsPayload(rawPayload = {}) {
   const revisions = isPlainObject(payload.revisions) ? payload.revisions : {};
 
   return {
-    items: (Array.isArray(payload.logs) ? payload.logs : []).filter((item) => isPlainObject(item)).map((item) => ({ ...item })),
+    items: (Array.isArray(payload.logs) ? payload.logs : [])
+      .filter((item) => isPlainObject(item))
+      .map((item) => ({ ...item })),
     total: Number.isFinite(Number(payload.total)) ? Number(payload.total) : null,
     totalPages: Math.max(1, parseInt(payload.totalPages, 10) || 1),
     page: Math.max(1, parseInt(payload.page, 10) || 1),
     pageSize: Math.min(200, Math.max(1, parseInt(payload.pageSize, 10) || 50)),
-    paginationMode: String(payload.paginationMode || '').trim().toLowerCase() === 'seek' ? 'seek' : 'offset',
+    paginationMode:
+      String(payload.paginationMode || "")
+        .trim()
+        .toLowerCase() === "seek"
+        ? "seek"
+        : "offset",
     pageCursor: normalizeLogPageCursor(payload.pageCursor),
     range: {
-      startDate: String(payload?.range?.startDate || '').trim(),
-      endDate: String(payload?.range?.endDate || '').trim()
+      startDate: String(payload?.range?.startDate || "").trim(),
+      endDate: String(payload?.range?.endDate || "").trim(),
     },
     searchMode: normalizeLogSearchMode(payload.searchMode),
     effectiveSearchMode: normalizeLogSearchMode(payload.effectiveSearchMode || payload.searchMode),
-    searchFallbackReason: String(payload.searchFallbackReason || '').trim(),
+    searchFallbackReason: String(payload.searchFallbackReason || "").trim(),
     totalExact: payload.totalExact !== false,
     hasPrevPage: payload.hasPrevPage === true,
     hasNextPage: payload.hasNextPage === true,
     nextCursor: normalizeLogPageCursor(payload.nextCursor),
     disabled: payload.disabled === true,
     revisions: {
-      logsRevision: String(revisions.logsRevision || '').trim()
+      logsRevision: String(revisions.logsRevision || "").trim(),
     },
-    lastFetchedAt: new Date().toISOString()
+    lastFetchedAt: new Date().toISOString(),
   };
 }
 
@@ -970,8 +1127,8 @@ export function useAdminConsole() {
       ...source,
       revisions: {
         ...(isPlainObject(source.revisions) ? source.revisions : {}),
-        ...revisions
-      }
+        ...revisions,
+      },
     };
   }
 
@@ -980,26 +1137,32 @@ export function useAdminConsole() {
     const normalizedRevisions = isPlainObject(revisions) ? revisions : {};
 
     if (isPlainObject(state.bootstrap)) {
-      state.bootstrap = mergeRevisionsPatch({
-        ...state.bootstrap,
-        nodes: normalizedNodes
-      }, normalizedRevisions);
+      state.bootstrap = mergeRevisionsPatch(
+        {
+          ...state.bootstrap,
+          nodes: normalizedNodes,
+        },
+        normalizedRevisions,
+      );
     }
 
     if (isPlainObject(state.settingsBootstrap)) {
-      state.settingsBootstrap = mergeRevisionsPatch({
-        ...state.settingsBootstrap,
-        nodes: normalizedNodes
-      }, normalizedRevisions);
+      state.settingsBootstrap = mergeRevisionsPatch(
+        {
+          ...state.settingsBootstrap,
+          nodes: normalizedNodes,
+        },
+        normalizedRevisions,
+      );
     }
 
     const nextSeedBootstrap = {
       ...(isPlainObject(state.seedBootstrap) ? state.seedBootstrap : {}),
-      nodes: normalizedNodes
+      nodes: normalizedNodes,
     };
     state.seedBootstrap = normalizeAdminBootstrap(
       mergeRevisionsPatch(nextSeedBootstrap, normalizedRevisions),
-      state.seedBootstrap
+      state.seedBootstrap,
     );
 
     return normalizedNodes;
@@ -1020,9 +1183,9 @@ export function useAdminConsole() {
     state.seedBootstrap = normalizeAdminBootstrap(
       mergeRevisionsPatch(
         isPlainObject(state.seedBootstrap) ? state.seedBootstrap : {},
-        normalizedRevisions
+        normalizedRevisions,
       ),
-      state.seedBootstrap
+      state.seedBootstrap,
     );
 
     return normalizedRevisions;
@@ -1045,8 +1208,8 @@ export function useAdminConsole() {
 
     normalizedItems.forEach((item) => {
       const ipType = normalizeDnsIpItemType(item?.ipType || item?.type);
-      if (ipType === 'IPv4') ipv4Count += 1;
-      if (ipType === 'IPv6') ipv6Count += 1;
+      if (ipType === "IPv4") ipv4Count += 1;
+      if (ipType === "IPv6") ipv6Count += 1;
 
       const countryCode = normalizeDnsIpValue(item?.countryCode).toUpperCase();
       const coloCode = normalizeDnsIpValue(item?.coloCode).toUpperCase();
@@ -1059,7 +1222,7 @@ export function useAdminConsole() {
       ipv4Count,
       ipv6Count,
       countryCount: countrySet.size,
-      coloCount: coloSet.size
+      coloCount: coloSet.size,
     };
   }
 
@@ -1072,8 +1235,8 @@ export function useAdminConsole() {
 
       const current = counter.get(code) || {
         code,
-        name: normalizeDnsIpValue(item?.countryName) || '未知',
-        count: 0
+        name: normalizeDnsIpValue(item?.countryName) || "未知",
+        count: 0,
       };
 
       current.count += 1;
@@ -1089,25 +1252,29 @@ export function useAdminConsole() {
 
     const nextWorkspace = {
       ...state.dnsWorkspace,
-      sourceList: Array.isArray(nextSources.sourceList) ? nextSources.sourceList : state.dnsWorkspace.sourceList,
+      sourceList: Array.isArray(nextSources.sourceList)
+        ? nextSources.sourceList
+        : state.dnsWorkspace.sourceList,
       dnsIpPoolRevision: nextSources.dnsIpPoolRevision || state.dnsWorkspace.dnsIpPoolRevision,
       builtInSourceOptions: Array.isArray(nextSources.builtInSourceOptions)
         ? nextSources.builtInSourceOptions
         : state.dnsWorkspace.builtInSourceOptions,
-      presetList: Array.isArray(nextSources.presetList) ? nextSources.presetList : state.dnsWorkspace.presetList,
+      presetList: Array.isArray(nextSources.presetList)
+        ? nextSources.presetList
+        : state.dnsWorkspace.presetList,
       preferredDomainLinks: Array.isArray(nextSources.preferredDomainLinks)
         ? nextSources.preferredDomainLinks
         : state.dnsWorkspace.preferredDomainLinks,
       preferredIpLinks: Array.isArray(nextSources.preferredIpLinks)
         ? nextSources.preferredIpLinks
-        : state.dnsWorkspace.preferredIpLinks
+        : state.dnsWorkspace.preferredIpLinks,
     };
 
-    if (typeof options.backgroundRefreshQueued === 'boolean') {
+    if (typeof options.backgroundRefreshQueued === "boolean") {
       nextWorkspace.backgroundRefreshQueued = options.backgroundRefreshQueued;
     }
 
-    if (String(options.sourceSnapshotStatus || '').trim()) {
+    if (String(options.sourceSnapshotStatus || "").trim()) {
       nextWorkspace.sourceSnapshotStatus = options.sourceSnapshotStatus;
     }
 
@@ -1120,8 +1287,8 @@ export function useAdminConsole() {
         sharedPool: buildDnsIpWorkspaceSummaryBlockFromItems(nextSharedPoolItems),
         combined: buildDnsIpWorkspaceSummaryBlockFromItems([
           ...(Array.isArray(nextWorkspace.currentHostItems) ? nextWorkspace.currentHostItems : []),
-          ...nextSharedPoolItems
-        ])
+          ...nextSharedPoolItems,
+        ]),
       };
     }
 
@@ -1141,15 +1308,17 @@ export function useAdminConsole() {
       ...state.dnsWorkspace,
       zoneId: nextZoneId || state.dnsWorkspace.zoneId,
       zoneName: nextZoneName || state.dnsWorkspace.zoneName,
-      host: nextHost || state.dnsWorkspace.host
+      host: nextHost || state.dnsWorkspace.host,
     };
   }
 
-  function normalizeDnsIpSourceEditorKind(value = '') {
-    const normalized = String(value || '').trim().toLowerCase();
-    if (normalized === 'builtin') return 'builtin';
-    if (normalized === 'preset') return 'preset';
-    return 'custom';
+  function normalizeDnsIpSourceEditorKind(value = "") {
+    const normalized = String(value || "")
+      .trim()
+      .toLowerCase();
+    if (normalized === "builtin") return "builtin";
+    if (normalized === "preset") return "preset";
+    return "custom";
   }
 
   function normalizeDnsIpSourceIpLimitForSave(value = 0) {
@@ -1164,32 +1333,41 @@ export function useAdminConsole() {
     const presetId = normalizeDnsIpValue(source.presetId || source.preset_id);
     const url = normalizeDnsIpValue(source.url);
     const domain = normalizeDnsIpValue(source.domain);
-    const targetValue = sourceType === 'domain' ? domain : url;
+    const targetValue = sourceType === "domain" ? domain : url;
 
-    if (sourceKind === 'builtin' && !builtinId) return null;
-    if (sourceKind === 'preset' && !presetId) return null;
-    if (sourceKind === 'custom' && !targetValue) return null;
+    if (sourceKind === "builtin" && !builtinId) return null;
+    if (sourceKind === "preset" && !presetId) return null;
+    if (sourceKind === "custom" && !targetValue) return null;
 
     const normalizedSource = {
       name: normalizeDnsIpValue(source.name) || `抓取源 ${index + 1}`,
       sourceKind,
       sourceType,
-      enabled: !(source.enabled === false || source.enabled === 0 || String(source.enabled ?? '').trim() === '0'),
+      enabled: !(
+        source.enabled === false ||
+        source.enabled === 0 ||
+        String(source.enabled ?? "").trim() === "0"
+      ),
       sortOrder: index,
       ipLimit: normalizeDnsIpSourceIpLimitForSave(source.ipLimit),
       lastFetchAt: normalizeDnsIpValue(source.lastFetchAt || source.last_fetch_at),
-      lastFetchStatus: normalizeDnsIpSourceFetchStatus(source.lastFetchStatus || source.last_fetch_status),
-      lastFetchCount: Math.max(0, parseInt(source.lastFetchCount ?? source.last_fetch_count, 10) || 0)
+      lastFetchStatus: normalizeDnsIpSourceFetchStatus(
+        source.lastFetchStatus || source.last_fetch_status,
+      ),
+      lastFetchCount: Math.max(
+        0,
+        parseInt(source.lastFetchCount ?? source.last_fetch_count, 10) || 0,
+      ),
     };
 
     const sourceId = normalizeDnsIpValue(source.id);
     if (sourceId) normalizedSource.id = sourceId;
 
-    if (sourceKind === 'builtin') {
+    if (sourceKind === "builtin") {
       normalizedSource.builtinId = builtinId;
-    } else if (sourceKind === 'preset') {
+    } else if (sourceKind === "preset") {
       normalizedSource.presetId = presetId;
-    } else if (sourceType === 'domain') {
+    } else if (sourceType === "domain") {
       normalizedSource.domain = domain;
     } else {
       normalizedSource.url = url;
@@ -1203,53 +1381,62 @@ export function useAdminConsole() {
     const normalizedRevisions = isPlainObject(revisions) ? revisions : {};
 
     if (isPlainObject(state.bootstrap)) {
-      state.bootstrap = mergeRevisionsPatch({
-        ...state.bootstrap,
-        config
-      }, normalizedRevisions);
+      state.bootstrap = mergeRevisionsPatch(
+        {
+          ...state.bootstrap,
+          config,
+        },
+        normalizedRevisions,
+      );
     }
 
     if (isPlainObject(state.settingsBootstrap)) {
-      state.settingsBootstrap = mergeRevisionsPatch({
-        ...state.settingsBootstrap,
-        config
-      }, normalizedRevisions);
+      state.settingsBootstrap = mergeRevisionsPatch(
+        {
+          ...state.settingsBootstrap,
+          config,
+        },
+        normalizedRevisions,
+      );
     }
 
     const nextSeedBootstrap = {
       ...(isPlainObject(state.seedBootstrap) ? state.seedBootstrap : {}),
-      config
+      config,
     };
     state.seedBootstrap = normalizeAdminBootstrap(
       mergeRevisionsPatch(nextSeedBootstrap, normalizedRevisions),
-      state.seedBootstrap
+      state.seedBootstrap,
     );
 
     return config;
   }
 
-  function patchBootstrapGeneratedAt(generatedAt = '') {
-    const normalizedGeneratedAt = String(generatedAt || '').trim();
-    if (!normalizedGeneratedAt) return '';
+  function patchBootstrapGeneratedAt(generatedAt = "") {
+    const normalizedGeneratedAt = String(generatedAt || "").trim();
+    if (!normalizedGeneratedAt) return "";
 
     if (isPlainObject(state.bootstrap)) {
       state.bootstrap = {
         ...state.bootstrap,
-        generatedAt: normalizedGeneratedAt
+        generatedAt: normalizedGeneratedAt,
       };
     }
 
     if (isPlainObject(state.settingsBootstrap)) {
       state.settingsBootstrap = {
         ...state.settingsBootstrap,
-        generatedAt: normalizedGeneratedAt
+        generatedAt: normalizedGeneratedAt,
       };
     }
 
-    state.seedBootstrap = normalizeAdminBootstrap({
-      ...(isPlainObject(state.seedBootstrap) ? state.seedBootstrap : {}),
-      generatedAt: normalizedGeneratedAt
-    }, state.seedBootstrap);
+    state.seedBootstrap = normalizeAdminBootstrap(
+      {
+        ...(isPlainObject(state.seedBootstrap) ? state.seedBootstrap : {}),
+        generatedAt: normalizedGeneratedAt,
+      },
+      state.seedBootstrap,
+    );
 
     return normalizedGeneratedAt;
   }
@@ -1260,9 +1447,13 @@ export function useAdminConsole() {
 
     const currentNodes = readCurrentNodes();
     const normalizedName = normalizeNodeName(normalizedNode.name);
-    const hasExistingNode = currentNodes.some((item) => normalizeNodeName(item?.name) === normalizedName);
+    const hasExistingNode = currentNodes.some(
+      (item) => normalizeNodeName(item?.name) === normalizedName,
+    );
     const nextNodes = hasExistingNode
-      ? currentNodes.map((item) => (normalizeNodeName(item?.name) === normalizedName ? normalizedNode : item))
+      ? currentNodes.map((item) =>
+          normalizeNodeName(item?.name) === normalizedName ? normalizedNode : item,
+        )
       : [...currentNodes, normalizedNode];
 
     commitNodesState(nextNodes, revisions);
@@ -1328,62 +1519,64 @@ export function useAdminConsole() {
       importDnsIpPoolItems: false,
       dnsRecords: false,
       saveDnsRecords: false,
-      updateDnsRecord: false
+      updateDnsRecord: false,
     },
     errors: {
-      hydrate: '',
-      snapshot: '',
-      runtimeStatus: '',
-      workerPlacementStatus: '',
-      saveWorkerPlacement: '',
-      updateWorkerAndAdminIndex: '',
-      settings: '',
-      loadConfig: '',
-      previewConfig: '',
-      saveConfig: '',
-      exportConfig: '',
-      exportSettings: '',
-      importFull: '',
-      importSettings: '',
-      nodes: '',
-      pingNode: '',
-      deleteNode: '',
-      nodeDetail: '',
-      saveNode: '',
-      importNodes: '',
-      logs: '',
-      clearLogs: '',
-      initLogsDb: '',
-      previewTidyData: '',
-      tidyKvData: '',
-      tidyD1Data: '',
-      purgeCache: '',
-      testTelegram: '',
-      sendDailyReport: '',
-      sendPredictedAlert: '',
-      dnsWorkspace: '',
-      dnsPoolSources: '',
-      saveDnsPoolSources: '',
-      refreshDnsPoolSources: '',
-      importDnsIpPoolItems: '',
-      dnsRecords: '',
-      saveDnsRecords: '',
-      updateDnsRecord: ''
+      hydrate: "",
+      snapshot: "",
+      runtimeStatus: "",
+      workerPlacementStatus: "",
+      saveWorkerPlacement: "",
+      updateWorkerAndAdminIndex: "",
+      settings: "",
+      loadConfig: "",
+      previewConfig: "",
+      saveConfig: "",
+      exportConfig: "",
+      exportSettings: "",
+      importFull: "",
+      importSettings: "",
+      nodes: "",
+      pingNode: "",
+      deleteNode: "",
+      nodeDetail: "",
+      saveNode: "",
+      importNodes: "",
+      logs: "",
+      clearLogs: "",
+      initLogsDb: "",
+      previewTidyData: "",
+      tidyKvData: "",
+      tidyD1Data: "",
+      purgeCache: "",
+      testTelegram: "",
+      sendDailyReport: "",
+      sendPredictedAlert: "",
+      dnsWorkspace: "",
+      dnsPoolSources: "",
+      saveDnsPoolSources: "",
+      refreshDnsPoolSources: "",
+      importDnsIpPoolItems: "",
+      dnsRecords: "",
+      saveDnsRecords: "",
+      updateDnsRecord: "",
     },
     settingsBootstrap: null,
     workerPlacementStatus: createEmptyWorkerPlacementStatus(),
     lastWorkerAndAdminIndexUpdate: createEmptyWorkerAndAdminIndexUpdateState(),
-    lastConfigSavedAt: '',
-    lastNodeSavedAt: '',
-    lastLogsClearedAt: '',
+    lastConfigSavedAt: "",
+    lastNodeSavedAt: "",
+    lastLogsClearedAt: "",
     nodePingPending: {},
-    nodeDeletePending: {}
+    nodeDeletePending: {},
   });
 
   const adminConsole = {
     state,
     get apiBaseUrl() {
-      return String(runtimeConfig.apiBaseUrl || (typeof window !== 'undefined' ? window.location.origin : '')).trim();
+      return String(
+        runtimeConfig.apiBaseUrl || (typeof window !== "undefined" ? window.location.origin : ""),
+      ).trim();
     },
     get adminBootstrap() {
       return state.bootstrap || state.seedBootstrap || {};
@@ -1402,10 +1595,15 @@ export function useAdminConsole() {
       return isPlainObject(this.snapshot.stats) ? this.snapshot.stats : {};
     },
     get runtimeStatus() {
-      if (isPlainObject(this.snapshot.runtimeStatus) && Object.keys(this.snapshot.runtimeStatus).length > 0) {
+      if (
+        isPlainObject(this.snapshot.runtimeStatus) &&
+        Object.keys(this.snapshot.runtimeStatus).length > 0
+      ) {
         return this.snapshot.runtimeStatus;
       }
-      return isPlainObject(this.adminBootstrap.runtimeStatus) ? this.adminBootstrap.runtimeStatus : {};
+      return isPlainObject(this.adminBootstrap.runtimeStatus)
+        ? this.adminBootstrap.runtimeStatus
+        : {};
     },
     get cacheMeta() {
       return isPlainObject(this.snapshot.cacheMeta) ? this.snapshot.cacheMeta : {};
@@ -1421,11 +1619,11 @@ export function useAdminConsole() {
         : createEmptyWorkerAndAdminIndexUpdateState();
     },
     get connectionState() {
-      if (state.loading.hydrate) return 'loading';
-      if (state.authRequired) return 'auth';
-      if (state.errors.hydrate) return 'error';
-      if (state.initialized) return 'ready';
-      return 'idle';
+      if (state.loading.hydrate) return "loading";
+      if (state.authRequired) return "auth";
+      if (state.errors.hydrate) return "error";
+      if (state.initialized) return "ready";
+      return "idle";
     },
     get hasLiveData() {
       return Object.keys(this.stats).length > 0 || Object.keys(this.runtimeStatus).length > 0;
@@ -1441,7 +1639,7 @@ export function useAdminConsole() {
       return isPlainObject(this.adminBootstrap.revisions) ? this.adminBootstrap.revisions : {};
     },
     get nodesRevision() {
-      return String(this.revisions.nodesRevision || '').trim();
+      return String(this.revisions.nodesRevision || "").trim();
     },
     get logs() {
       return Array.isArray(state.logs?.items) ? state.logs.items : [];
@@ -1453,19 +1651,29 @@ export function useAdminConsole() {
       return normalizeLogsQuery(state.logsQuery, createDefaultLogsQuery());
     },
     get logsRevision() {
-      return String(this.revisions.logsRevision || state.logs?.revisions?.logsRevision || '').trim();
+      return String(
+        this.revisions.logsRevision || state.logs?.revisions?.logsRevision || "",
+      ).trim();
     },
     get dnsWorkspace() {
-      return isPlainObject(state.dnsWorkspace) ? state.dnsWorkspace : createEmptyDnsIpWorkspaceState();
+      return isPlainObject(state.dnsWorkspace)
+        ? state.dnsWorkspace
+        : createEmptyDnsIpWorkspaceState();
     },
     get dnsPoolSourcesState() {
-      return isPlainObject(state.dnsPoolSources) ? state.dnsPoolSources : createEmptyDnsIpPoolSourcesState();
+      return isPlainObject(state.dnsPoolSources)
+        ? state.dnsPoolSources
+        : createEmptyDnsIpPoolSourcesState();
     },
     get dnsPoolRefreshState() {
-      return isPlainObject(state.dnsPoolRefresh) ? state.dnsPoolRefresh : createEmptyDnsIpPoolRefreshState();
+      return isPlainObject(state.dnsPoolRefresh)
+        ? state.dnsPoolRefresh
+        : createEmptyDnsIpPoolRefreshState();
     },
     get dnsImportPreviewState() {
-      return isPlainObject(state.dnsImportPreview) ? state.dnsImportPreview : createEmptyDnsImportPreviewState();
+      return isPlainObject(state.dnsImportPreview)
+        ? state.dnsImportPreview
+        : createEmptyDnsImportPreviewState();
     },
     get dnsRecordsState() {
       return isPlainObject(state.dnsRecords) ? state.dnsRecords : createEmptyDnsRecordState();
@@ -1474,13 +1682,19 @@ export function useAdminConsole() {
       if (Array.isArray(this.dnsWorkspace.sourceList) && this.dnsWorkspace.sourceList.length > 0) {
         return this.dnsWorkspace.sourceList;
       }
-      return Array.isArray(this.dnsPoolSourcesState.sourceList) ? this.dnsPoolSourcesState.sourceList : [];
+      return Array.isArray(this.dnsPoolSourcesState.sourceList)
+        ? this.dnsPoolSourcesState.sourceList
+        : [];
     },
     get dnsSharedPoolItems() {
-      return Array.isArray(this.dnsWorkspace.sharedPoolItems) ? this.dnsWorkspace.sharedPoolItems : [];
+      return Array.isArray(this.dnsWorkspace.sharedPoolItems)
+        ? this.dnsWorkspace.sharedPoolItems
+        : [];
     },
     get dnsCurrentHostItems() {
-      return Array.isArray(this.dnsWorkspace.currentHostItems) ? this.dnsWorkspace.currentHostItems : [];
+      return Array.isArray(this.dnsWorkspace.currentHostItems)
+        ? this.dnsWorkspace.currentHostItems
+        : [];
     },
     get dnsSummary() {
       return isPlainObject(this.dnsWorkspace.summary)
@@ -1489,67 +1703,85 @@ export function useAdminConsole() {
     },
     get dnsIpPoolRevision() {
       return String(
-        this.dnsWorkspace.dnsIpPoolRevision
-        || this.dnsPoolSourcesState.dnsIpPoolRevision
-        || this.revisions.dnsIpPoolRevision
-        || ''
+        this.dnsWorkspace.dnsIpPoolRevision ||
+          this.dnsPoolSourcesState.dnsIpPoolRevision ||
+          this.revisions.dnsIpPoolRevision ||
+          "",
       ).trim();
     },
     get dnsBuiltInSourceOptions() {
-      if (Array.isArray(this.dnsWorkspace.builtInSourceOptions) && this.dnsWorkspace.builtInSourceOptions.length > 0) {
+      if (
+        Array.isArray(this.dnsWorkspace.builtInSourceOptions) &&
+        this.dnsWorkspace.builtInSourceOptions.length > 0
+      ) {
         return this.dnsWorkspace.builtInSourceOptions;
       }
-      return Array.isArray(this.dnsPoolSourcesState.builtInSourceOptions) ? this.dnsPoolSourcesState.builtInSourceOptions : [];
+      return Array.isArray(this.dnsPoolSourcesState.builtInSourceOptions)
+        ? this.dnsPoolSourcesState.builtInSourceOptions
+        : [];
     },
     get dnsPresetList() {
       if (Array.isArray(this.dnsWorkspace.presetList) && this.dnsWorkspace.presetList.length > 0) {
         return this.dnsWorkspace.presetList;
       }
-      return Array.isArray(this.dnsPoolSourcesState.presetList) ? this.dnsPoolSourcesState.presetList : [];
+      return Array.isArray(this.dnsPoolSourcesState.presetList)
+        ? this.dnsPoolSourcesState.presetList
+        : [];
     },
     get dnsPreferredDomainLinks() {
-      if (Array.isArray(this.dnsWorkspace.preferredDomainLinks) && this.dnsWorkspace.preferredDomainLinks.length > 0) {
+      if (
+        Array.isArray(this.dnsWorkspace.preferredDomainLinks) &&
+        this.dnsWorkspace.preferredDomainLinks.length > 0
+      ) {
         return this.dnsWorkspace.preferredDomainLinks;
       }
-      return Array.isArray(this.dnsPoolSourcesState.preferredDomainLinks) ? this.dnsPoolSourcesState.preferredDomainLinks : [];
+      return Array.isArray(this.dnsPoolSourcesState.preferredDomainLinks)
+        ? this.dnsPoolSourcesState.preferredDomainLinks
+        : [];
     },
     get dnsPreferredIpLinks() {
-      if (Array.isArray(this.dnsWorkspace.preferredIpLinks) && this.dnsWorkspace.preferredIpLinks.length > 0) {
+      if (
+        Array.isArray(this.dnsWorkspace.preferredIpLinks) &&
+        this.dnsWorkspace.preferredIpLinks.length > 0
+      ) {
         return this.dnsWorkspace.preferredIpLinks;
       }
-      return Array.isArray(this.dnsPoolSourcesState.preferredIpLinks) ? this.dnsPoolSourcesState.preferredIpLinks : [];
+      return Array.isArray(this.dnsPoolSourcesState.preferredIpLinks)
+        ? this.dnsPoolSourcesState.preferredIpLinks
+        : [];
     },
     get loginUrl() {
       return resolveAdminLoginHref({
         seedBootstrap: this.adminBootstrap,
-        apiBaseUrl: runtimeConfig.apiBaseUrl
+        apiBaseUrl: runtimeConfig.apiBaseUrl,
       });
     },
     get adminUrl() {
-      return resolveAdminUrl(this.adminBootstrap.adminPath || runtimeConfig.adminPath, runtimeConfig.apiBaseUrl);
+      return resolveAdminUrl(
+        this.adminBootstrap.adminPath || runtimeConfig.adminPath,
+        runtimeConfig.apiBaseUrl,
+      );
     },
     get hostDomain() {
-      return String(this.adminBootstrap.hostDomain || '').trim();
+      return String(this.adminBootstrap.hostDomain || "").trim();
     },
     get legacyHost() {
-      return String(this.settingsBootstrap.legacyHost || '').trim();
+      return String(this.settingsBootstrap.legacyHost || "").trim();
     },
     async hydrate(options = {}) {
       if (state.loading.hydrate) return false;
 
       const forceRefresh = options.forceRefresh === true;
       state.loading.hydrate = true;
-      state.errors.hydrate = '';
+      state.errors.hydrate = "";
       state.authRequired = false;
 
       try {
         const [bootstrapPayload, snapshotPayload] = await Promise.all([
-          callAdminAction('getAdminBootstrap', {}, { seedBootstrap: state.seedBootstrap }),
-          callAdminAction(
-            'getDashboardSnapshot',
-            forceRefresh ? { forceRefresh: true } : {},
-            { seedBootstrap: state.seedBootstrap }
-          )
+          callAdminAction("getAdminBootstrap", {}, { seedBootstrap: state.seedBootstrap }),
+          callAdminAction("getDashboardSnapshot", forceRefresh ? { forceRefresh: true } : {}, {
+            seedBootstrap: state.seedBootstrap,
+          }),
         ]);
 
         state.bootstrap = normalizeAdminBootstrap(bootstrapPayload, state.seedBootstrap);
@@ -1561,9 +1793,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.hydrate = '';
+          state.errors.hydrate = "";
         } else {
-          state.errors.hydrate = getErrorMessage(error, '管理台数据加载失败');
+          state.errors.hydrate = getErrorMessage(error, "管理台数据加载失败");
         }
         return false;
       } finally {
@@ -1574,12 +1806,16 @@ export function useAdminConsole() {
       if (state.loading.settings) return false;
 
       state.loading.settings = true;
-      state.errors.settings = '';
+      state.errors.settings = "";
 
       try {
-        const settingsPayload = await callAdminAction('getSettingsBootstrap', {}, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const settingsPayload = await callAdminAction(
+          "getSettingsBootstrap",
+          {},
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const normalizedSettings = normalizeAdminBootstrap(settingsPayload, state.seedBootstrap);
         state.settingsBootstrap = normalizedSettings;
@@ -1588,7 +1824,7 @@ export function useAdminConsole() {
         if (state.bootstrap) {
           state.bootstrap = {
             ...state.bootstrap,
-            ...normalizedSettings
+            ...normalizedSettings,
           };
         }
         state.initialized = true;
@@ -1597,9 +1833,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.settings = '';
+          state.errors.settings = "";
         } else {
-          state.errors.settings = getErrorMessage(error, '设置页加载失败');
+          state.errors.settings = getErrorMessage(error, "设置页加载失败");
         }
         return false;
       } finally {
@@ -1610,12 +1846,16 @@ export function useAdminConsole() {
       if (state.loading.loadConfig) return null;
 
       state.loading.loadConfig = true;
-      state.errors.loadConfig = '';
+      state.errors.loadConfig = "";
 
       try {
-        const payload = await callAdminAction('loadConfig', {}, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "loadConfig",
+          {},
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextConfig = isPlainObject(payload?.config) ? payload.config : {};
         const nextRevisions = isPlainObject(payload?.revisions) ? payload.revisions : {};
@@ -1624,14 +1864,14 @@ export function useAdminConsole() {
 
         return {
           config: nextConfig,
-          revisions: nextRevisions
+          revisions: nextRevisions,
         };
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.loadConfig = '';
+          state.errors.loadConfig = "";
         } else {
-          state.errors.loadConfig = getErrorMessage(error, '配置读取失败');
+          state.errors.loadConfig = getErrorMessage(error, "配置读取失败");
         }
         return null;
       } finally {
@@ -1642,26 +1882,30 @@ export function useAdminConsole() {
       if (state.loading.previewConfig) return null;
 
       state.loading.previewConfig = true;
-      state.errors.previewConfig = '';
+      state.errors.previewConfig = "";
 
       try {
-        const payload = await callAdminAction('previewConfig', {
-          config: isPlainObject(config) ? config : {}
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "previewConfig",
+          {
+            config: isPlainObject(config) ? config : {},
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         state.authRequired = false;
         return {
           config: isPlainObject(payload?.config) ? payload.config : {},
-          migration: isPlainObject(payload?.migration) ? payload.migration : {}
+          migration: isPlainObject(payload?.migration) ? payload.migration : {},
         };
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.previewConfig = '';
+          state.errors.previewConfig = "";
         } else {
-          state.errors.previewConfig = getErrorMessage(error, '配置预检失败');
+          state.errors.previewConfig = getErrorMessage(error, "配置预检失败");
         }
         return null;
       } finally {
@@ -1672,23 +1916,27 @@ export function useAdminConsole() {
       if (state.loading.saveConfig) return null;
 
       state.loading.saveConfig = true;
-      state.errors.saveConfig = '';
+      state.errors.saveConfig = "";
 
       try {
-        const payload = await callAdminAction('saveConfig', {
-          config: isPlainObject(config) ? config : {},
-          expectedConfigRevision: String(
-            options.expectedConfigRevision
-              || this.settingsBootstrap?.revisions?.configRevision
-              || ''
-          ).trim(),
-          meta: {
-            section: String(options.section || 'settings').trim() || 'settings',
-            source: String(options.source || 'frontend-vue').trim() || 'frontend-vue'
-          }
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "saveConfig",
+          {
+            config: isPlainObject(config) ? config : {},
+            expectedConfigRevision: String(
+              options.expectedConfigRevision ||
+                this.settingsBootstrap?.revisions?.configRevision ||
+                "",
+            ).trim(),
+            meta: {
+              section: String(options.section || "settings").trim() || "settings",
+              source: String(options.source || "frontend-vue").trim() || "frontend-vue",
+            },
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextConfig = isPlainObject(payload?.config) ? payload.config : {};
         const nextRevisions = isPlainObject(payload?.revisions) ? payload.revisions : {};
@@ -1698,33 +1946,39 @@ export function useAdminConsole() {
         state.authRequired = false;
 
         if (state.bootstrap) {
-          state.bootstrap = mergeRevisionsPatch({
-            ...state.bootstrap,
-            config: nextConfig
-          }, nextRevisions);
+          state.bootstrap = mergeRevisionsPatch(
+            {
+              ...state.bootstrap,
+              config: nextConfig,
+            },
+            nextRevisions,
+          );
         }
 
         if (state.settingsBootstrap) {
-          state.settingsBootstrap = mergeRevisionsPatch({
-            ...state.settingsBootstrap,
-            config: nextConfig,
-            generatedAt: savedAt
-          }, nextRevisions);
+          state.settingsBootstrap = mergeRevisionsPatch(
+            {
+              ...state.settingsBootstrap,
+              config: nextConfig,
+              generatedAt: savedAt,
+            },
+            nextRevisions,
+          );
         }
 
         const seedSource = state.settingsBootstrap || state.bootstrap || state.seedBootstrap;
         state.seedBootstrap = normalizeAdminBootstrap(seedSource, state.seedBootstrap);
-		return {
-			config: nextConfig,
-			revisions: nextRevisions,
-			savedAt
+        return {
+          config: nextConfig,
+          revisions: nextRevisions,
+          savedAt,
         };
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.saveConfig = '';
+          state.errors.saveConfig = "";
         } else {
-          state.errors.saveConfig = getErrorMessage(error, '设置保存失败');
+          state.errors.saveConfig = getErrorMessage(error, "设置保存失败");
         }
         return null;
       } finally {
@@ -1735,21 +1989,25 @@ export function useAdminConsole() {
       if (state.loading.exportConfig) return null;
 
       state.loading.exportConfig = true;
-      state.errors.exportConfig = '';
+      state.errors.exportConfig = "";
 
       try {
-        const payload = await callAdminAction('exportConfig', {}, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "exportConfig",
+          {},
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         state.authRequired = false;
-        return payload && typeof payload === 'object' ? payload : null;
+        return payload && typeof payload === "object" ? payload : null;
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.exportConfig = '';
+          state.errors.exportConfig = "";
         } else {
-          state.errors.exportConfig = getErrorMessage(error, '完整配置导出失败');
+          state.errors.exportConfig = getErrorMessage(error, "完整配置导出失败");
         }
         return null;
       } finally {
@@ -1760,21 +2018,25 @@ export function useAdminConsole() {
       if (state.loading.exportSettings) return null;
 
       state.loading.exportSettings = true;
-      state.errors.exportSettings = '';
+      state.errors.exportSettings = "";
 
       try {
-        const payload = await callAdminAction('exportSettings', {}, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "exportSettings",
+          {},
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         state.authRequired = false;
-        return payload && typeof payload === 'object' ? payload : null;
+        return payload && typeof payload === "object" ? payload : null;
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.exportSettings = '';
+          state.errors.exportSettings = "";
         } else {
-          state.errors.exportSettings = getErrorMessage(error, '设置备份导出失败');
+          state.errors.exportSettings = getErrorMessage(error, "设置备份导出失败");
         }
         return null;
       } finally {
@@ -1785,18 +2047,22 @@ export function useAdminConsole() {
       if (state.loading.importFull) return null;
 
       state.loading.importFull = true;
-      state.errors.importFull = '';
+      state.errors.importFull = "";
 
       try {
-        const response = await callAdminAction('importFull', {
-          ...(isPlainObject(payload) ? payload : {}),
-          meta: {
-            section: String(options.section || 'all').trim() || 'all',
-            source: String(options.source || 'frontend-vue').trim() || 'frontend-vue'
-          }
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const response = await callAdminAction(
+          "importFull",
+          {
+            ...(isPlainObject(payload) ? payload : {}),
+            meta: {
+              section: String(options.section || "all").trim() || "all",
+              source: String(options.source || "frontend-vue").trim() || "frontend-vue",
+            },
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextConfig = isPlainObject(response?.config) ? response.config : {};
         const nextNodes = Array.isArray(response?.nodes) ? response.nodes : readCurrentNodes();
@@ -1804,20 +2070,20 @@ export function useAdminConsole() {
 
         patchBootstrapConfig(nextConfig, nextRevisions);
         commitNodesState(nextNodes, nextRevisions);
-		state.authRequired = false;
+        state.authRequired = false;
 
         return {
           success: response?.success === true,
-			config: nextConfig,
-			nodes: normalizeNodeCollection(nextNodes),
-			revisions: nextRevisions
+          config: nextConfig,
+          nodes: normalizeNodeCollection(nextNodes),
+          revisions: nextRevisions,
         };
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.importFull = '';
+          state.errors.importFull = "";
         } else {
-          state.errors.importFull = getErrorMessage(error, '完整配置导入失败');
+          state.errors.importFull = getErrorMessage(error, "完整配置导入失败");
         }
         return null;
       } finally {
@@ -1828,45 +2094,50 @@ export function useAdminConsole() {
       if (state.loading.importSettings) return null;
 
       state.loading.importSettings = true;
-      state.errors.importSettings = '';
+      state.errors.importSettings = "";
 
       try {
-        const response = await callAdminAction('importSettings', {
-          ...(isPlainObject(payload) ? payload : {}),
-          meta: {
-            section: String(options.section || 'settings').trim() || 'settings',
-            source: String(options.source || 'frontend-vue').trim() || 'frontend-vue'
-          }
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const response = await callAdminAction(
+          "importSettings",
+          {
+            ...(isPlainObject(payload) ? payload : {}),
+            meta: {
+              section: String(options.section || "settings").trim() || "settings",
+              source: String(options.source || "frontend-vue").trim() || "frontend-vue",
+            },
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextConfig = isPlainObject(response?.config) ? response.config : {};
         const nextRevisions = isPlainObject(response?.revisions) ? response.revisions : {};
-		const savedAt = patchBootstrapGeneratedAt(
-          String(response?.generatedAt || new Date().toISOString()).trim() || new Date().toISOString()
+        const savedAt = patchBootstrapGeneratedAt(
+          String(response?.generatedAt || new Date().toISOString()).trim() ||
+            new Date().toISOString(),
         );
 
-		patchBootstrapConfig(nextConfig, nextRevisions);
-		if (Object.keys(nextRevisions).length > 0) {
-			patchBootstrapRevisions(nextRevisions);
-		}
+        patchBootstrapConfig(nextConfig, nextRevisions);
+        if (Object.keys(nextRevisions).length > 0) {
+          patchBootstrapRevisions(nextRevisions);
+        }
 
         state.lastConfigSavedAt = savedAt;
         state.authRequired = false;
 
         return {
-			success: response?.success === true,
-			config: nextConfig,
-			revisions: nextRevisions,
-			savedAt
+          success: response?.success === true,
+          config: nextConfig,
+          revisions: nextRevisions,
+          savedAt,
         };
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.importSettings = '';
+          state.errors.importSettings = "";
         } else {
-          state.errors.importSettings = getErrorMessage(error, '设置备份导入失败');
+          state.errors.importSettings = getErrorMessage(error, "设置备份导入失败");
         }
         return null;
       } finally {
@@ -1877,13 +2148,13 @@ export function useAdminConsole() {
       if (state.loading.snapshot) return false;
 
       state.loading.snapshot = true;
-      state.errors.snapshot = '';
+      state.errors.snapshot = "";
 
       try {
         const snapshotPayload = await callAdminAction(
-          'getDashboardSnapshot',
+          "getDashboardSnapshot",
           options.forceRefresh === true ? { forceRefresh: true } : {},
-          { seedBootstrap: state.seedBootstrap }
+          { seedBootstrap: state.seedBootstrap },
         );
         state.snapshot = normalizeDashboardSnapshot(snapshotPayload);
         state.authRequired = false;
@@ -1891,9 +2162,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.snapshot = '';
+          state.errors.snapshot = "";
         } else {
-          state.errors.snapshot = getErrorMessage(error, '仪表盘刷新失败');
+          state.errors.snapshot = getErrorMessage(error, "仪表盘刷新失败");
         }
         return false;
       } finally {
@@ -1904,27 +2175,29 @@ export function useAdminConsole() {
       if (state.loading.runtimeStatus) return null;
 
       state.loading.runtimeStatus = true;
-      state.errors.runtimeStatus = '';
+      state.errors.runtimeStatus = "";
 
       try {
-        const payload = normalizeRuntimeStatusPayload(await callAdminAction(
-          'getRuntimeStatus',
-          options.forceRefresh === true ? { forceRefresh: true } : {},
-          { seedBootstrap: state.seedBootstrap }
-        ));
+        const payload = normalizeRuntimeStatusPayload(
+          await callAdminAction(
+            "getRuntimeStatus",
+            options.forceRefresh === true ? { forceRefresh: true } : {},
+            { seedBootstrap: state.seedBootstrap },
+          ),
+        );
 
         state.snapshot = normalizeDashboardSnapshot({
           ...this.snapshot,
-          runtimeStatus: payload.status
+          runtimeStatus: payload.status,
         });
         state.authRequired = false;
         return payload;
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.runtimeStatus = '';
+          state.errors.runtimeStatus = "";
         } else {
-          state.errors.runtimeStatus = getErrorMessage(error, '运行状态刷新失败');
+          state.errors.runtimeStatus = getErrorMessage(error, "运行状态刷新失败");
         }
         return null;
       } finally {
@@ -1935,12 +2208,18 @@ export function useAdminConsole() {
       if (state.loading.workerPlacementStatus) return this.workerPlacementStatus;
 
       state.loading.workerPlacementStatus = true;
-      state.errors.workerPlacementStatus = '';
+      state.errors.workerPlacementStatus = "";
 
       try {
-        const payload = normalizeWorkerPlacementStatus(await callAdminAction('getWorkerPlacementStatus', {}, {
-          seedBootstrap: state.seedBootstrap
-        }));
+        const payload = normalizeWorkerPlacementStatus(
+          await callAdminAction(
+            "getWorkerPlacementStatus",
+            {},
+            {
+              seedBootstrap: state.seedBootstrap,
+            },
+          ),
+        );
 
         state.workerPlacementStatus = payload;
         state.authRequired = false;
@@ -1948,9 +2227,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.workerPlacementStatus = '';
+          state.errors.workerPlacementStatus = "";
         } else {
-          state.errors.workerPlacementStatus = getErrorMessage(error, 'Worker 放置状态读取失败');
+          state.errors.workerPlacementStatus = getErrorMessage(error, "Worker 放置状态读取失败");
         }
         return null;
       } finally {
@@ -1961,18 +2240,24 @@ export function useAdminConsole() {
       if (state.loading.saveWorkerPlacement) return null;
 
       const mode = normalizeWorkerPlacementEditableMode(payload?.mode);
-      const region = String(payload?.region || '').trim();
+      const region = String(payload?.region || "").trim();
 
       state.loading.saveWorkerPlacement = true;
-      state.errors.saveWorkerPlacement = '';
+      state.errors.saveWorkerPlacement = "";
 
       try {
-        const response = normalizeWorkerPlacementStatus(await callAdminAction('saveWorkerPlacement', {
-          mode,
-          ...(mode === 'region' ? { region } : {})
-        }, {
-          seedBootstrap: state.seedBootstrap
-        }));
+        const response = normalizeWorkerPlacementStatus(
+          await callAdminAction(
+            "saveWorkerPlacement",
+            {
+              mode,
+              ...(mode === "region" ? { region } : {}),
+            },
+            {
+              seedBootstrap: state.seedBootstrap,
+            },
+          ),
+        );
 
         state.workerPlacementStatus = response;
         state.authRequired = false;
@@ -1980,9 +2265,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.saveWorkerPlacement = '';
+          state.errors.saveWorkerPlacement = "";
         } else {
-          state.errors.saveWorkerPlacement = getErrorMessage(error, 'Worker 放置保存失败');
+          state.errors.saveWorkerPlacement = getErrorMessage(error, "Worker 放置保存失败");
         }
         return null;
       } finally {
@@ -1992,23 +2277,30 @@ export function useAdminConsole() {
     async updateWorkerAndAdminIndex(payload = {}) {
       if (state.loading.updateWorkerAndAdminIndex) return null;
 
-      const workerFileName = String(payload?.workerFileName || 'worker.js').trim() || 'worker.js';
-      const workerScriptContent = typeof payload?.workerScriptContent === 'string' ? payload.workerScriptContent : '';
-      const indexFileName = String(payload?.indexFileName || 'index.html').trim() || 'index.html';
-      const indexHtml = typeof payload?.indexHtml === 'string' ? payload.indexHtml : '';
+      const workerFileName = String(payload?.workerFileName || "worker.js").trim() || "worker.js";
+      const workerScriptContent =
+        typeof payload?.workerScriptContent === "string" ? payload.workerScriptContent : "";
+      const indexFileName = String(payload?.indexFileName || "index.html").trim() || "index.html";
+      const indexHtml = typeof payload?.indexHtml === "string" ? payload.indexHtml : "";
 
       state.loading.updateWorkerAndAdminIndex = true;
-      state.errors.updateWorkerAndAdminIndex = '';
+      state.errors.updateWorkerAndAdminIndex = "";
 
       try {
-        const response = normalizeWorkerAndAdminIndexUpdatePayload(await callAdminAction('updateWorkerAndAdminIndex', {
-          workerFileName,
-          workerScriptContent,
-          indexFileName,
-          indexHtml
-        }, {
-          seedBootstrap: state.seedBootstrap
-        }));
+        const response = normalizeWorkerAndAdminIndexUpdatePayload(
+          await callAdminAction(
+            "updateWorkerAndAdminIndex",
+            {
+              workerFileName,
+              workerScriptContent,
+              indexFileName,
+              indexHtml,
+            },
+            {
+              seedBootstrap: state.seedBootstrap,
+            },
+          ),
+        );
 
         state.lastWorkerAndAdminIndexUpdate = response;
         state.authRequired = false;
@@ -2016,9 +2308,12 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.updateWorkerAndAdminIndex = '';
+          state.errors.updateWorkerAndAdminIndex = "";
         } else {
-          state.errors.updateWorkerAndAdminIndex = getErrorMessage(error, 'Worker 与 HTML 更新失败');
+          state.errors.updateWorkerAndAdminIndex = getErrorMessage(
+            error,
+            "Worker 与 HTML 更新失败",
+          );
         }
         return null;
       } finally {
@@ -2028,30 +2323,42 @@ export function useAdminConsole() {
     async previewTidyData(options = {}) {
       if (state.loading.previewTidyData) return null;
 
-      const scope = String(options.scope || 'kv').trim().toLowerCase() === 'd1' ? 'd1' : 'kv';
+      const scope =
+        String(options.scope || "kv")
+          .trim()
+          .toLowerCase() === "d1"
+          ? "d1"
+          : "kv";
       state.loading.previewTidyData = true;
-      state.errors.previewTidyData = '';
+      state.errors.previewTidyData = "";
 
       try {
-        const payload = normalizeTidyPreviewPayload(await callAdminAction('previewTidyData', {
+        const payload = normalizeTidyPreviewPayload(
+          await callAdminAction(
+            "previewTidyData",
+            {
+              scope,
+              ...(scope === "d1" && String(options.maintenanceMode || "").trim()
+                ? { maintenanceMode: String(options.maintenanceMode).trim() }
+                : {}),
+            },
+            {
+              seedBootstrap: state.seedBootstrap,
+            },
+          ),
           scope,
-          ...(scope === 'd1' && String(options.maintenanceMode || '').trim()
-            ? { maintenanceMode: String(options.maintenanceMode).trim() }
-            : {})
-        }, {
-          seedBootstrap: state.seedBootstrap
-        }), scope);
+        );
 
         state.authRequired = false;
         return payload;
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.previewTidyData = '';
+          state.errors.previewTidyData = "";
         } else {
           state.errors.previewTidyData = getErrorMessage(
             error,
-            scope === 'd1' ? 'D1 tidy 预览失败' : 'KV tidy 预览失败'
+            scope === "d1" ? "D1 tidy 预览失败" : "KV tidy 预览失败",
           );
         }
         return null;
@@ -2063,12 +2370,19 @@ export function useAdminConsole() {
       if (state.loading.tidyKvData) return null;
 
       state.loading.tidyKvData = true;
-      state.errors.tidyKvData = '';
+      state.errors.tidyKvData = "";
 
       try {
-        const payload = normalizeTidyPreviewPayload(await callAdminAction('tidyKvData', {}, {
-          seedBootstrap: state.seedBootstrap
-        }), 'kv');
+        const payload = normalizeTidyPreviewPayload(
+          await callAdminAction(
+            "tidyKvData",
+            {},
+            {
+              seedBootstrap: state.seedBootstrap,
+            },
+          ),
+          "kv",
+        );
 
         state.authRequired = false;
         await this.getRuntimeStatus({ forceRefresh: true });
@@ -2076,9 +2390,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.tidyKvData = '';
+          state.errors.tidyKvData = "";
         } else {
-          state.errors.tidyKvData = getErrorMessage(error, 'KV tidy 执行失败');
+          state.errors.tidyKvData = getErrorMessage(error, "KV tidy 执行失败");
         }
         return null;
       } finally {
@@ -2089,16 +2403,21 @@ export function useAdminConsole() {
       if (state.loading.tidyD1Data) return null;
 
       state.loading.tidyD1Data = true;
-      state.errors.tidyD1Data = '';
+      state.errors.tidyD1Data = "";
 
       try {
-        const payload = normalizeTidyPreviewPayload(await callAdminAction('tidyD1Data', {
-          ...(String(options.maintenanceMode || '').trim()
-            ? { maintenanceMode: String(options.maintenanceMode).trim() }
-            : {})
-        }, {
-          seedBootstrap: state.seedBootstrap
-        }), 'd1');
+        const payload = normalizeTidyPreviewPayload(
+          await callAdminAction(
+            "tidyD1Data",
+            String(options.maintenanceMode || "").trim()
+              ? { maintenanceMode: String(options.maintenanceMode).trim() }
+              : {},
+            {
+              seedBootstrap: state.seedBootstrap,
+            },
+          ),
+          "d1",
+        );
 
         state.authRequired = false;
         await this.getRuntimeStatus({ forceRefresh: true });
@@ -2106,9 +2425,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.tidyD1Data = '';
+          state.errors.tidyD1Data = "";
         } else {
-          state.errors.tidyD1Data = getErrorMessage(error, 'D1 tidy 执行失败');
+          state.errors.tidyD1Data = getErrorMessage(error, "D1 tidy 执行失败");
         }
         return null;
       } finally {
@@ -2119,24 +2438,28 @@ export function useAdminConsole() {
       if (state.loading.purgeCache) return null;
 
       state.loading.purgeCache = true;
-      state.errors.purgeCache = '';
+      state.errors.purgeCache = "";
 
       try {
-        const payload = await callAdminAction('purgeCache', {}, {
-          seedBootstrap: state.seedBootstrap,
-          headers: {
-            'X-Admin-Confirm': 'purgeCache'
-          }
-        });
+        const payload = await callAdminAction(
+          "purgeCache",
+          {},
+          {
+            seedBootstrap: state.seedBootstrap,
+            headers: {
+              "X-Admin-Confirm": "purgeCache",
+            },
+          },
+        );
 
         state.authRequired = false;
         return payload;
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.purgeCache = '';
+          state.errors.purgeCache = "";
         } else {
-          state.errors.purgeCache = getErrorMessage(error, 'Cloudflare cache 清理失败');
+          state.errors.purgeCache = getErrorMessage(error, "Cloudflare cache 清理失败");
         }
         return null;
       } finally {
@@ -2147,24 +2470,28 @@ export function useAdminConsole() {
       if (state.loading.testTelegram) return null;
 
       state.loading.testTelegram = true;
-      state.errors.testTelegram = '';
+      state.errors.testTelegram = "";
 
       try {
-        const response = await callAdminAction('testTelegram', {
-          tgBotToken: String(payload.tgBotToken || '').trim(),
-          tgChatId: String(payload.tgChatId || '').trim()
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const response = await callAdminAction(
+          "testTelegram",
+          {
+            tgBotToken: String(payload.tgBotToken || "").trim(),
+            tgChatId: String(payload.tgChatId || "").trim(),
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         state.authRequired = false;
         return response;
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.testTelegram = '';
+          state.errors.testTelegram = "";
         } else {
-          state.errors.testTelegram = getErrorMessage(error, 'Telegram 测试失败');
+          state.errors.testTelegram = getErrorMessage(error, "Telegram 测试失败");
         }
         return null;
       } finally {
@@ -2175,21 +2502,25 @@ export function useAdminConsole() {
       if (state.loading.sendDailyReport) return null;
 
       state.loading.sendDailyReport = true;
-      state.errors.sendDailyReport = '';
+      state.errors.sendDailyReport = "";
 
       try {
-        const payload = await callAdminAction('sendDailyReport', {}, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "sendDailyReport",
+          {},
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         state.authRequired = false;
         return payload;
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.sendDailyReport = '';
+          state.errors.sendDailyReport = "";
         } else {
-          state.errors.sendDailyReport = getErrorMessage(error, '每日报表发送失败');
+          state.errors.sendDailyReport = getErrorMessage(error, "每日报表发送失败");
         }
         return null;
       } finally {
@@ -2200,21 +2531,25 @@ export function useAdminConsole() {
       if (state.loading.sendPredictedAlert) return null;
 
       state.loading.sendPredictedAlert = true;
-      state.errors.sendPredictedAlert = '';
+      state.errors.sendPredictedAlert = "";
 
       try {
-        const payload = await callAdminAction('sendPredictedAlert', {}, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "sendPredictedAlert",
+          {},
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         state.authRequired = false;
-        return payload && typeof payload === 'object' ? payload : null;
+        return payload && typeof payload === "object" ? payload : null;
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.sendPredictedAlert = '';
+          state.errors.sendPredictedAlert = "";
         } else {
-          state.errors.sendPredictedAlert = getErrorMessage(error, '预测告警发送失败');
+          state.errors.sendPredictedAlert = getErrorMessage(error, "预测告警发送失败");
         }
         return null;
       } finally {
@@ -2225,13 +2560,13 @@ export function useAdminConsole() {
       if (state.loading.dnsWorkspace) return this.dnsWorkspace;
 
       state.loading.dnsWorkspace = true;
-      state.errors.dnsWorkspace = '';
+      state.errors.dnsWorkspace = "";
 
       try {
         const payload = await callAdminAction(
-          'getDnsIpWorkspace',
+          "getDnsIpWorkspace",
           options.forceRefresh === true ? { forceRefresh: true } : {},
-          { seedBootstrap: state.seedBootstrap }
+          { seedBootstrap: state.seedBootstrap },
         );
 
         const nextWorkspace = normalizeDnsIpWorkspacePayload(payload, state.dnsPoolSources);
@@ -2243,9 +2578,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.dnsWorkspace = '';
+          state.errors.dnsWorkspace = "";
         } else {
-          state.errors.dnsWorkspace = getErrorMessage(error, 'DNS / IP 池工作区加载失败');
+          state.errors.dnsWorkspace = getErrorMessage(error, "DNS / IP 池工作区加载失败");
         }
         return null;
       } finally {
@@ -2256,12 +2591,16 @@ export function useAdminConsole() {
       if (state.loading.dnsPoolSources) return this.dnsPoolSourcesState;
 
       state.loading.dnsPoolSources = true;
-      state.errors.dnsPoolSources = '';
+      state.errors.dnsPoolSources = "";
 
       try {
-        const payload = await callAdminAction('getDnsIpPoolSources', {}, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "getDnsIpPoolSources",
+          {},
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextSources = normalizeDnsIpPoolSourcesPayload(payload, state.dnsPoolSources);
         state.dnsPoolSources = nextSources;
@@ -2273,9 +2612,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.dnsPoolSources = '';
+          state.errors.dnsPoolSources = "";
         } else {
-          state.errors.dnsPoolSources = getErrorMessage(error, 'DNS / IP 池抓取源加载失败');
+          state.errors.dnsPoolSources = getErrorMessage(error, "DNS / IP 池抓取源加载失败");
         }
         return null;
       } finally {
@@ -2286,16 +2625,20 @@ export function useAdminConsole() {
       if (state.loading.saveDnsPoolSources) return this.dnsPoolSourcesState;
 
       state.loading.saveDnsPoolSources = true;
-      state.errors.saveDnsPoolSources = '';
+      state.errors.saveDnsPoolSources = "";
 
       try {
-        const payload = await callAdminAction('saveDnsIpPoolSources', {
-          sources: (Array.isArray(sources) ? sources : [])
-            .map((source, index) => normalizeDnsIpPoolSourceForSave(source, index))
-            .filter(Boolean)
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "saveDnsIpPoolSources",
+          {
+            sources: (Array.isArray(sources) ? sources : [])
+              .map((source, index) => normalizeDnsIpPoolSourceForSave(source, index))
+              .filter(Boolean),
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextSources = normalizeDnsIpPoolSourcesPayload(payload, state.dnsPoolSources);
         state.dnsPoolSources = nextSources;
@@ -2304,7 +2647,7 @@ export function useAdminConsole() {
           sourceList: nextSources.sourceList,
           dnsIpPoolRevision: nextSources.dnsIpPoolRevision,
           revisions: nextSources.revisions,
-          lastFetchedAt: state.dnsPoolRefresh.lastFetchedAt
+          lastFetchedAt: state.dnsPoolRefresh.lastFetchedAt,
         };
         syncDnsPoolSourcesIntoWorkspace(nextSources);
         patchBootstrapRevisions(nextSources.revisions);
@@ -2314,9 +2657,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.saveDnsPoolSources = '';
+          state.errors.saveDnsPoolSources = "";
         } else {
-          state.errors.saveDnsPoolSources = getErrorMessage(error, 'DNS / IP 池抓取源保存失败');
+          state.errors.saveDnsPoolSources = getErrorMessage(error, "DNS / IP 池抓取源保存失败");
         }
         return null;
       } finally {
@@ -2327,30 +2670,32 @@ export function useAdminConsole() {
       if (state.loading.refreshDnsPoolSources) return this.dnsPoolRefreshState;
 
       state.loading.refreshDnsPoolSources = true;
-      state.errors.refreshDnsPoolSources = '';
+      state.errors.refreshDnsPoolSources = "";
 
       try {
         const maxBytes = Number(options.maxBytes);
-        const payload = await callAdminAction('refreshDnsIpPoolFromSources', {
-          ...(Number.isFinite(maxBytes) && maxBytes > 0 ? { maxBytes: Math.round(maxBytes) } : {})
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "refreshDnsIpPoolFromSources",
+          Number.isFinite(maxBytes) && maxBytes > 0 ? { maxBytes: Math.round(maxBytes) } : {},
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextSources = normalizeDnsIpPoolSourcesPayload(payload, state.dnsPoolSources);
         const nextRefresh = normalizeDnsIpPoolRefreshPayload(payload, state.dnsPoolRefresh);
-        const snapshotStatus = nextRefresh.cacheStatus === 'live' ? 'live_sync' : 'cache';
+        const snapshotStatus = nextRefresh.cacheStatus === "live" ? "live_sync" : "cache";
 
         state.dnsPoolSources = nextSources;
         state.dnsPoolRefresh = {
           ...nextRefresh,
           sourceList: nextSources.sourceList,
-          dnsIpPoolRevision: nextRefresh.dnsIpPoolRevision || nextSources.dnsIpPoolRevision
+          dnsIpPoolRevision: nextRefresh.dnsIpPoolRevision || nextSources.dnsIpPoolRevision,
         };
         syncDnsPoolSourcesIntoWorkspace(nextSources, {
           sharedPoolItems: state.dnsPoolRefresh.items,
           backgroundRefreshQueued: state.dnsPoolRefresh.backgroundRefreshQueued,
-          sourceSnapshotStatus: snapshotStatus
+          sourceSnapshotStatus: snapshotStatus,
         });
         patchBootstrapRevisions(nextRefresh.revisions);
         state.authRequired = false;
@@ -2359,9 +2704,12 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.refreshDnsPoolSources = '';
+          state.errors.refreshDnsPoolSources = "";
         } else {
-          state.errors.refreshDnsPoolSources = getErrorMessage(error, 'DNS / IP 池抓取结果刷新失败');
+          state.errors.refreshDnsPoolSources = getErrorMessage(
+            error,
+            "DNS / IP 池抓取结果刷新失败",
+          );
         }
         return null;
       } finally {
@@ -2371,43 +2719,51 @@ export function useAdminConsole() {
     async hydrateDnsPanel(options = {}) {
       const [workspace, sources] = await Promise.all([
         this.getDnsIpWorkspace(options),
-        this.getDnsIpPoolSources()
+        this.getDnsIpPoolSources(),
       ]);
 
       return {
         workspace,
-        sources
+        sources,
       };
     },
     async refreshDnsPanel(options = {}) {
       return this.hydrateDnsPanel({
         ...options,
-        forceRefresh: options.forceRefresh !== false
+        forceRefresh: options.forceRefresh !== false,
       });
     },
-    async importDnsIpPoolItems(text = '', options = {}) {
+    async importDnsIpPoolItems(text = "", options = {}) {
       if (state.loading.importDnsIpPoolItems) return this.dnsImportPreviewState;
 
       state.loading.importDnsIpPoolItems = true;
-      state.errors.importDnsIpPoolItems = '';
+      state.errors.importDnsIpPoolItems = "";
 
       try {
-        const sourceKind = normalizeDnsIpValue(options.sourceKind || 'manual') || 'manual';
-        const sourceLabel = normalizeDnsIpValue(options.sourceLabel)
-          || (sourceKind === 'file' ? '文件导入' : '手动导入');
-        const payload = await callAdminAction('importDnsIpPoolItems', {
-          text: String(text || ''),
-          sourceKind,
-          sourceLabel
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const sourceKind = normalizeDnsIpValue(options.sourceKind || "manual") || "manual";
+        const sourceLabel =
+          normalizeDnsIpValue(options.sourceLabel) ||
+          (sourceKind === "file" ? "文件导入" : "手动导入");
+        const payload = await callAdminAction(
+          "importDnsIpPoolItems",
+          {
+            text: String(text || ""),
+            sourceKind,
+            sourceLabel,
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
-        const nextPreview = normalizeDnsImportPreviewPayload({
-          ...payload,
-          sourceKind,
-          sourceLabel
-        }, state.dnsImportPreview);
+        const nextPreview = normalizeDnsImportPreviewPayload(
+          {
+            ...payload,
+            sourceKind,
+            sourceLabel,
+          },
+          state.dnsImportPreview,
+        );
 
         state.dnsImportPreview = nextPreview;
         patchBootstrapRevisions(nextPreview.revisions);
@@ -2416,9 +2772,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.importDnsIpPoolItems = '';
+          state.errors.importDnsIpPoolItems = "";
         } else {
-          state.errors.importDnsIpPoolItems = getErrorMessage(error, 'IP 文本导入预览失败');
+          state.errors.importDnsIpPoolItems = getErrorMessage(error, "IP 文本导入预览失败");
         }
         return null;
       } finally {
@@ -2429,14 +2785,18 @@ export function useAdminConsole() {
       if (state.loading.dnsRecords) return this.dnsRecordsState;
 
       state.loading.dnsRecords = true;
-      state.errors.dnsRecords = '';
+      state.errors.dnsRecords = "";
 
       try {
-        const payload = await callAdminAction('listDnsRecords', {
-          includeAllRecords: options.includeAllRecords !== false
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "listDnsRecords",
+          {
+            includeAllRecords: options.includeAllRecords !== false,
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextDnsRecords = normalizeDnsRecordsPayload(payload, state.dnsRecords);
         state.dnsRecords = nextDnsRecords;
@@ -2446,9 +2806,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.dnsRecords = '';
+          state.errors.dnsRecords = "";
         } else {
-          state.errors.dnsRecords = getErrorMessage(error, '当前 Host DNS 记录加载失败');
+          state.errors.dnsRecords = getErrorMessage(error, "当前 Host DNS 记录加载失败");
         }
         return null;
       } finally {
@@ -2459,31 +2819,40 @@ export function useAdminConsole() {
       if (state.loading.saveDnsRecords) return this.dnsRecordsState;
 
       state.loading.saveDnsRecords = true;
-      state.errors.saveDnsRecords = '';
+      state.errors.saveDnsRecords = "";
 
       try {
         const mode = normalizeDnsRecordMode(options.mode);
-        const host = normalizeDnsIpValue(options.host || state.dnsRecords.currentHost || state.dnsWorkspace.host);
+        const host = normalizeDnsIpValue(
+          options.host || state.dnsRecords.currentHost || state.dnsWorkspace.host,
+        );
         const records = (Array.isArray(options.records) ? options.records : [])
           .map((record) => normalizeDnsRecordPayloadForSave(record, mode))
           .filter(Boolean);
-        const payload = await callAdminAction('saveDnsRecords', {
-          host,
-          mode,
-          records,
-          includeAllRecords: options.includeAllRecords !== false
-        }, {
-          seedBootstrap: state.seedBootstrap,
-          headers: {
-            'X-Admin-Confirm': 'saveDnsRecords'
-          }
-        });
+        const payload = await callAdminAction(
+          "saveDnsRecords",
+          {
+            host,
+            mode,
+            records,
+            includeAllRecords: options.includeAllRecords !== false,
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+            headers: {
+              "X-Admin-Confirm": "saveDnsRecords",
+            },
+          },
+        );
 
-        const nextDnsRecords = normalizeDnsRecordsPayload({
-          ...payload,
-          currentHost: payload?.currentHost || host,
-          mode
-        }, state.dnsRecords);
+        const nextDnsRecords = normalizeDnsRecordsPayload(
+          {
+            ...payload,
+            currentHost: payload?.currentHost || host,
+            mode,
+          },
+          state.dnsRecords,
+        );
         state.dnsRecords = nextDnsRecords;
         syncDnsRecordStateIntoWorkspace(nextDnsRecords);
         state.authRequired = false;
@@ -2491,9 +2860,9 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.saveDnsRecords = '';
+          state.errors.saveDnsRecords = "";
         } else {
-          state.errors.saveDnsRecords = getErrorMessage(error, 'DNS 记录保存失败');
+          state.errors.saveDnsRecords = getErrorMessage(error, "DNS 记录保存失败");
         }
         return null;
       } finally {
@@ -2504,49 +2873,60 @@ export function useAdminConsole() {
       if (state.loading.updateDnsRecord) return null;
 
       state.loading.updateDnsRecord = true;
-      state.errors.updateDnsRecord = '';
+      state.errors.updateDnsRecord = "";
 
       try {
         const requestPayload = normalizeDnsRecordPayloadForUpsert(record, options);
-        const confirmAction = requestPayload.recordId ? 'updateDnsRecord' : 'createDnsRecord';
+        const confirmAction = requestPayload.recordId ? "updateDnsRecord" : "createDnsRecord";
         const payload = await callAdminAction(confirmAction, requestPayload, {
           seedBootstrap: state.seedBootstrap,
           headers: {
-            'X-Admin-Confirm': confirmAction
-          }
+            "X-Admin-Confirm": confirmAction,
+          },
         });
 
         const updatedRecord = normalizeDnsEditableRecord(payload?.record) || null;
-        const nextHistory = (Array.isArray(payload?.history) ? payload.history : state.dnsRecords.history)
+        const nextHistory = (
+          Array.isArray(payload?.history) ? payload.history : state.dnsRecords.history
+        )
           .map((entry, index) => normalizeDnsRecordHistoryEntry(entry, index))
           .filter(Boolean);
 
         if (updatedRecord) {
           const currentHost = normalizeDnsIpValue(
-            state.dnsRecords.currentHost
-            || requestPayload.host
-            || updatedRecord.name
+            state.dnsRecords.currentHost || requestPayload.host || updatedRecord.name,
           );
           const nextCurrentRecords = sortDnsEditableRecords([
-            ...(Array.isArray(state.dnsRecords.records) ? state.dnsRecords.records.filter((item) => String(item.id || '').trim() !== updatedRecord.id) : []),
-            ...(updatedRecord.name === currentHost ? [updatedRecord] : [])
+            ...(Array.isArray(state.dnsRecords.records)
+              ? state.dnsRecords.records.filter(
+                  (item) => String(item.id || "").trim() !== updatedRecord.id,
+                )
+              : []),
+            ...(updatedRecord.name === currentHost ? [updatedRecord] : []),
           ]);
           const nextAllRecords = sortDnsEditableRecords([
-            ...(Array.isArray(state.dnsRecords.allRecords) ? state.dnsRecords.allRecords.filter((item) => String(item.id || '').trim() !== updatedRecord.id) : []),
-            updatedRecord
+            ...(Array.isArray(state.dnsRecords.allRecords)
+              ? state.dnsRecords.allRecords.filter(
+                  (item) => String(item.id || "").trim() !== updatedRecord.id,
+                )
+              : []),
+            updatedRecord,
           ]);
 
-          const nextDnsRecords = normalizeDnsRecordsPayload({
-            ...state.dnsRecords,
-            zoneId: state.dnsRecords.zoneId,
-            zoneName: state.dnsRecords.zoneName,
-            currentHost,
-            records: nextCurrentRecords,
-            allRecords: nextAllRecords,
-            allRecordsIncluded: true,
-            history: nextHistory,
-            mode: inferDnsRecordMode(nextCurrentRecords, state.dnsRecords.mode)
-          }, state.dnsRecords);
+          const nextDnsRecords = normalizeDnsRecordsPayload(
+            {
+              ...state.dnsRecords,
+              zoneId: state.dnsRecords.zoneId,
+              zoneName: state.dnsRecords.zoneName,
+              currentHost,
+              records: nextCurrentRecords,
+              allRecords: nextAllRecords,
+              allRecordsIncluded: true,
+              history: nextHistory,
+              mode: inferDnsRecordMode(nextCurrentRecords, state.dnsRecords.mode),
+            },
+            state.dnsRecords,
+          );
 
           state.dnsRecords = nextDnsRecords;
           syncDnsRecordStateIntoWorkspace(nextDnsRecords);
@@ -2555,25 +2935,25 @@ export function useAdminConsole() {
         state.authRequired = false;
         return {
           record: updatedRecord,
-          history: nextHistory
+          history: nextHistory,
         };
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.updateDnsRecord = '';
+          state.errors.updateDnsRecord = "";
         } else {
-          state.errors.updateDnsRecord = getErrorMessage(error, '单条 DNS 记录保存失败');
+          state.errors.updateDnsRecord = getErrorMessage(error, "单条 DNS 记录保存失败");
         }
         return null;
       } finally {
         state.loading.updateDnsRecord = false;
       }
     },
-    isNodePingPending(name = '') {
+    isNodePingPending(name = "") {
       const normalizedName = normalizeNodeName(name);
       return normalizedName ? state.nodePingPending[normalizedName] === true : false;
     },
-    isNodeDeleting(name = '') {
+    isNodeDeleting(name = "") {
       const normalizedName = normalizeNodeName(name);
       return normalizedName ? state.nodeDeletePending[normalizedName] === true : false;
     },
@@ -2581,21 +2961,25 @@ export function useAdminConsole() {
       if (state.loading.nodes) return null;
 
       state.loading.nodes = true;
-      state.errors.nodes = '';
+      state.errors.nodes = "";
 
       try {
-        const payload = await callAdminAction('list', {}, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "list",
+          {},
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
         const nextNodes = normalizeNodeCollection(payload?.nodes);
         commitNodesState(nextNodes, payload?.revisions);
         return nextNodes;
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.nodes = '';
+          state.errors.nodes = "";
         } else {
-          state.errors.nodes = getErrorMessage(error, '节点列表加载失败');
+          state.errors.nodes = getErrorMessage(error, "节点列表加载失败");
         }
         return null;
       } finally {
@@ -2607,22 +2991,32 @@ export function useAdminConsole() {
       if (!nodeName || this.isNodePingPending(nodeName)) return null;
 
       state.nodePingPending[nodeName] = true;
-      state.errors.pingNode = '';
+      state.errors.pingNode = "";
 
       try {
-        const payload = await callAdminAction('pingNode', {
-          name: nodeName,
-          ...(String(options.lineId || '').trim() ? { lineId: String(options.lineId).trim() } : {})
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "pingNode",
+          {
+            name: nodeName,
+            ...(String(options.lineId || "").trim()
+              ? { lineId: String(options.lineId).trim() }
+              : {}),
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextNode = isPlainObject(payload?.node) ? payload.node : null;
         if (nextNode) {
           const currentNodes = this.nodes;
-          const hasExistingNode = currentNodes.some((node) => normalizeNodeName(node?.name) === nodeName);
+          const hasExistingNode = currentNodes.some(
+            (node) => normalizeNodeName(node?.name) === nodeName,
+          );
           const nextNodes = hasExistingNode
-            ? currentNodes.map((node) => (normalizeNodeName(node?.name) === nodeName ? nextNode : node))
+            ? currentNodes.map((node) =>
+                normalizeNodeName(node?.name) === nodeName ? nextNode : node,
+              )
             : [...currentNodes, nextNode];
           commitNodesState(nextNodes);
         }
@@ -2632,28 +3026,32 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.pingNode = '';
+          state.errors.pingNode = "";
         } else {
-          state.errors.pingNode = getErrorMessage(error, '节点探测失败');
+          state.errors.pingNode = getErrorMessage(error, "节点探测失败");
         }
         return null;
       } finally {
         delete state.nodePingPending[nodeName];
       }
     },
-    async deleteNode(name = '') {
+    async deleteNode(name = "") {
       const nodeName = normalizeNodeName(name);
       if (!nodeName || this.isNodeDeleting(nodeName)) return null;
 
       state.nodeDeletePending[nodeName] = true;
-      state.errors.deleteNode = '';
+      state.errors.deleteNode = "";
 
       try {
-        const payload = await callAdminAction('delete', {
-          name: nodeName
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "delete",
+          {
+            name: nodeName,
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextNodes = Array.isArray(payload?.nodes)
           ? normalizeNodeCollection(payload.nodes)
@@ -2665,43 +3063,47 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.deleteNode = '';
+          state.errors.deleteNode = "";
         } else {
-          state.errors.deleteNode = getErrorMessage(error, '节点删除失败');
+          state.errors.deleteNode = getErrorMessage(error, "节点删除失败");
         }
         return null;
       } finally {
         delete state.nodeDeletePending[nodeName];
       }
     },
-    async getNode(name = '') {
+    async getNode(name = "") {
       const nodeName = normalizeNodeName(name);
       if (!nodeName || state.loading.nodeDetail) return null;
 
       state.loading.nodeDetail = true;
-      state.errors.nodeDetail = '';
+      state.errors.nodeDetail = "";
 
       try {
-        const payload = await callAdminAction('getNode', {
-          name: nodeName
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "getNode",
+          {
+            name: nodeName,
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextNode = upsertNodeState(payload?.node, payload?.revisions);
         state.authRequired = false;
         return nextNode
           ? {
               node: nextNode,
-              revisions: isPlainObject(payload?.revisions) ? payload.revisions : {}
+              revisions: isPlainObject(payload?.revisions) ? payload.revisions : {},
             }
           : null;
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.nodeDetail = '';
+          state.errors.nodeDetail = "";
         } else {
-          state.errors.nodeDetail = getErrorMessage(error, '节点详情加载失败');
+          state.errors.nodeDetail = getErrorMessage(error, "节点详情加载失败");
         }
         return null;
       } finally {
@@ -2712,11 +3114,11 @@ export function useAdminConsole() {
       if (state.loading.saveNode) return null;
 
       state.loading.saveNode = true;
-      state.errors.saveNode = '';
+      state.errors.saveNode = "";
 
       try {
-        const payload = await callAdminAction('save', isPlainObject(node) ? node : {}, {
-          seedBootstrap: state.seedBootstrap
+        const payload = await callAdminAction("save", isPlainObject(node) ? node : {}, {
+          seedBootstrap: state.seedBootstrap,
         });
 
         const nextNodes = Array.isArray(payload?.nodes)
@@ -2735,14 +3137,14 @@ export function useAdminConsole() {
           nodes: nextNodes,
           revisions: nextRevisions,
           savedAt,
-          source: String(options.source || 'frontend-vue').trim() || 'frontend-vue'
+          source: String(options.source || "frontend-vue").trim() || "frontend-vue",
         };
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.saveNode = '';
+          state.errors.saveNode = "";
         } else {
-          state.errors.saveNode = getErrorMessage(error, '节点保存失败');
+          state.errors.saveNode = getErrorMessage(error, "节点保存失败");
         }
         return null;
       } finally {
@@ -2753,14 +3155,18 @@ export function useAdminConsole() {
       if (state.loading.importNodes) return null;
 
       state.loading.importNodes = true;
-      state.errors.importNodes = '';
+      state.errors.importNodes = "";
 
       try {
-        const payload = await callAdminAction('import', {
-          nodes: Array.isArray(nodes) ? nodes : []
-        }, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "import",
+          {
+            nodes: Array.isArray(nodes) ? nodes : [],
+          },
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextNodes = Array.isArray(payload?.nodes)
           ? normalizeNodeCollection(payload.nodes)
@@ -2774,14 +3180,14 @@ export function useAdminConsole() {
         return {
           nodes: nextNodes,
           importedNodes,
-          revisions: nextRevisions
+          revisions: nextRevisions,
         };
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.importNodes = '';
+          state.errors.importNodes = "";
         } else {
-          state.errors.importNodes = getErrorMessage(error, '节点导入失败');
+          state.errors.importNodes = getErrorMessage(error, "节点导入失败");
         }
         return null;
       } finally {
@@ -2792,34 +3198,37 @@ export function useAdminConsole() {
       if (state.loading.logs) return null;
 
       state.loading.logs = true;
-      state.errors.logs = '';
+      state.errors.logs = "";
 
       const nextQuery = normalizeLogsQuery(query, state.logsQuery);
 
       try {
-        const payload = await callAdminAction('getLogs', nextQuery, {
-          seedBootstrap: state.seedBootstrap
+        const payload = await callAdminAction("getLogs", nextQuery, {
+          seedBootstrap: state.seedBootstrap,
         });
 
         const nextLogsState = normalizeLogsPayload(payload);
         patchBootstrapRevisions(nextLogsState.revisions);
         state.logs = nextLogsState;
-        state.logsQuery = normalizeLogsQuery({
-          ...nextQuery,
-          page: nextLogsState.page,
-          pageSize: nextLogsState.pageSize,
-          paginationMode: nextLogsState.paginationMode,
-          pageCursor: nextLogsState.pageCursor
-        }, nextQuery);
+        state.logsQuery = normalizeLogsQuery(
+          {
+            ...nextQuery,
+            page: nextLogsState.page,
+            pageSize: nextLogsState.pageSize,
+            paginationMode: nextLogsState.paginationMode,
+            pageCursor: nextLogsState.pageCursor,
+          },
+          nextQuery,
+        );
         state.authRequired = false;
 
         return nextLogsState;
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.logs = '';
+          state.errors.logs = "";
         } else {
-          state.errors.logs = getErrorMessage(error, '日志列表加载失败');
+          state.errors.logs = getErrorMessage(error, "日志列表加载失败");
         }
         return null;
       } finally {
@@ -2830,15 +3239,19 @@ export function useAdminConsole() {
       if (state.loading.clearLogs) return null;
 
       state.loading.clearLogs = true;
-      state.errors.clearLogs = '';
+      state.errors.clearLogs = "";
 
       try {
-        const payload = await callAdminAction('clearLogs', {}, {
-          seedBootstrap: state.seedBootstrap,
-          headers: {
-            'X-Admin-Confirm': 'clearLogs'
-          }
-        });
+        const payload = await callAdminAction(
+          "clearLogs",
+          {},
+          {
+            seedBootstrap: state.seedBootstrap,
+            headers: {
+              "X-Admin-Confirm": "clearLogs",
+            },
+          },
+        );
 
         const nextRevisions = isPlainObject(payload?.revisions) ? payload.revisions : {};
         patchBootstrapRevisions(nextRevisions);
@@ -2853,30 +3266,33 @@ export function useAdminConsole() {
           searchMode: normalizeLogSearchMode(state.logsQuery.filters?.searchMode),
           effectiveSearchMode: normalizeLogSearchMode(state.logsQuery.filters?.searchMode),
           range: {
-            ...state.logs.range
+            ...state.logs.range,
           },
           revisions: {
-            logsRevision: String(nextRevisions.logsRevision || '').trim()
+            logsRevision: String(nextRevisions.logsRevision || "").trim(),
           },
-          lastFetchedAt: clearedAt
+          lastFetchedAt: clearedAt,
         };
-        state.logsQuery = normalizeLogsQuery({
-          ...state.logsQuery,
-          page: 1,
-          pageCursor: null
-        }, state.logsQuery);
+        state.logsQuery = normalizeLogsQuery(
+          {
+            ...state.logsQuery,
+            page: 1,
+            pageCursor: null,
+          },
+          state.logsQuery,
+        );
         state.authRequired = false;
 
         return {
           ...payload,
-          clearedAt
+          clearedAt,
         };
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.clearLogs = '';
+          state.errors.clearLogs = "";
         } else {
-          state.errors.clearLogs = getErrorMessage(error, '日志清空失败');
+          state.errors.clearLogs = getErrorMessage(error, "日志清空失败");
         }
         return null;
       } finally {
@@ -2887,16 +3303,20 @@ export function useAdminConsole() {
       if (state.loading.initLogsDb) return null;
 
       state.loading.initLogsDb = true;
-      state.errors.initLogsDb = '';
+      state.errors.initLogsDb = "";
 
       try {
-        const payload = await callAdminAction('initLogsDb', {}, {
-          seedBootstrap: state.seedBootstrap
-        });
+        const payload = await callAdminAction(
+          "initLogsDb",
+          {},
+          {
+            seedBootstrap: state.seedBootstrap,
+          },
+        );
 
         const nextRevisions = isPlainObject(payload?.revisions) ? payload.revisions : {};
         patchBootstrapRevisions(nextRevisions);
-        state.errors.logs = '';
+        state.errors.logs = "";
         state.authRequired = false;
 
         if (isPlainObject(state.logs)) {
@@ -2904,8 +3324,10 @@ export function useAdminConsole() {
             ...state.logs,
             revisions: {
               ...(isPlainObject(state.logs.revisions) ? state.logs.revisions : {}),
-              logsRevision: String(nextRevisions.logsRevision || state.logs?.revisions?.logsRevision || '').trim()
-            }
+              logsRevision: String(
+                nextRevisions.logsRevision || state.logs?.revisions?.logsRevision || "",
+              ).trim(),
+            },
           };
         }
 
@@ -2913,15 +3335,15 @@ export function useAdminConsole() {
       } catch (error) {
         if (isAuthError(error)) {
           state.authRequired = true;
-          state.errors.initLogsDb = '';
+          state.errors.initLogsDb = "";
         } else {
-          state.errors.initLogsDb = getErrorMessage(error, '日志表初始化失败');
+          state.errors.initLogsDb = getErrorMessage(error, "日志表初始化失败");
         }
         return null;
       } finally {
         state.loading.initLogsDb = false;
       }
-    }
+    },
   };
 
   return adminConsole;

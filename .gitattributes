@@ -1,0 +1,4 @@
+# worker.js 是 build:worker 的产物：压缩器每次都会重排标识符，任何源码改动都会连带
+# 上千行无关的改名噪声（实测一次 24 行源码改动 → 约 1,200 行产物差异）。把它标成不可 diff，
+# 让评审只看 worker/ 的源码差异，产物与否由 check-worker-bundle 的新鲜度校验守住。
+worker.js -diff

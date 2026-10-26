@@ -16,13 +16,24 @@
     "check:worker-bundle": "node ./scripts/check-worker-bundle.mjs",
     "build:frontend": "npm run build --workspace frontend",
     "build:release": "npm run build:worker && npm run build:cdn --workspace frontend",
-    "check": "node ./scripts/check-project.mjs"
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "check": "node ./scripts/check-project.mjs",
+    "tail": "node --env-file-if-exists=.env ./node_modules/wrangler/bin/wrangler.js tail"
   },
   "devDependencies": {
     "acorn": "^8.15.0",
     "acorn-walk": "^8.3.5",
     "miniflare": "^4.20260722.1",
+    "oxfmt": "^0.72.0",
+    "oxlint": "^1.87.0",
     "vite": "^8.1.5",
     "wrangler": "^4.0.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "workerd@1.20260722.1": true
   }
 }

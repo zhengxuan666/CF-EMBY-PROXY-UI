@@ -1,4 +1,4 @@
-import { createBindingStateManager } from './binding-state.js';
+import { createBindingStateManager } from "./binding-state.js";
 
 function createCleanupState() {
   return {
@@ -13,23 +13,23 @@ function createCleanupState() {
       playbackInfo: null,
       failover: null,
       progress: null,
-      monthlyTraffic: null
-    }
+      monthlyTraffic: null,
+    },
   };
 }
 
 export function makeRuntimeConfigBindingStateManager() {
   const bindings = createBindingStateManager(() => ({ namespaces: new Map() }));
-  let currentNamespace = 'default';
+  let currentNamespace = "default";
 
-  const getEntryFromState = (state, namespace = 'default') => {
-    const normalizedNamespace = String(namespace || 'default').trim() || 'default';
+  const getEntryFromState = (state, namespace = "default") => {
+    const normalizedNamespace = String(namespace || "default").trim() || "default";
     let entry = state.namespaces.get(normalizedNamespace);
     if (!entry) {
       entry = {
         ConfigCache: null,
         RuntimeConfigCacheGeneration: 0,
-        SingleFlightTasks: new Map()
+        SingleFlightTasks: new Map(),
       };
       state.namespaces.set(normalizedNamespace, entry);
     }
@@ -38,7 +38,7 @@ export function makeRuntimeConfigBindingStateManager() {
   };
 
   return {
-    get(binding = null, namespace = 'default') {
+    get(binding = null, namespace = "default") {
       return getEntryFromState(bindings.get(binding), namespace);
     },
     current() {
@@ -46,15 +46,15 @@ export function makeRuntimeConfigBindingStateManager() {
     },
     reset() {
       bindings.reset();
-      currentNamespace = 'default';
-    }
+      currentNamespace = "default";
+    },
   };
 }
 
 export function makeKvMutationBindingStateManager() {
   const bindings = createBindingStateManager(() => ({
     KvDataMutationChain: Promise.resolve(),
-    KvTidyMutationChain: Promise.resolve()
+    KvTidyMutationChain: Promise.resolve(),
   }));
   return {
     get(binding = null) {
@@ -65,7 +65,7 @@ export function makeKvMutationBindingStateManager() {
     },
     reset() {
       bindings.reset();
-    }
+    },
   };
 }
 

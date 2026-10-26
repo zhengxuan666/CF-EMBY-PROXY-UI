@@ -1,7 +1,8 @@
-import { build } from 'vite';
-import { fileURLToPath } from 'node:url';
+import { build } from "vite";
+import { fileURLToPath } from "node:url";
 
-export const MAX_WORKER_BUNDLE_BYTES = 960_000;
+// 硬守卫 1.5 MB，工作目标 1.1 MB：两者相差的余量用于容纳计划内的增长，目标值不在此处强制。
+export const MAX_WORKER_BUNDLE_BYTES = 1_500_000;
 
 /**
  * Build the Worker and enforce its single-module delivery contract.
@@ -10,30 +11,36 @@ export const MAX_WORKER_BUNDLE_BYTES = 960_000;
  */
 export async function buildWorkerBundle({ outDir, write = true }) {
   const result = await build({
-    configFile: fileURLToPath(new URL('../vite.worker.config.js', import.meta.url)),
+    configFile: fileURLToPath(new URL("../vite.worker.config.js", import.meta.url)),
     build: {
       outDir,
       emptyOutDir: true,
-      write
-    }
+      write,
+    },
   });
   const outputs = Array.isArray(result) ? result : [result];
-  const emitted = outputs.flatMap(output => output?.output || []);
-  const chunks = emitted.filter(item => item.type === 'chunk');
-  const assets = emitted.filter(item => item.type === 'asset' && !String(item.fileName).endsWith('.map'));
+  const emitted = outputs.flatMap((output) => output?.output || []);
+  const chunks = emitted.filter((item) => item.type === "chunk");
+  const assets = emitted.filter(
+    (item) => item.type === "asset" && !String(item.fileName).endsWith(".map"),
+  );
 
   if (chunks.length !== 1 || chunks[0].isEntry !== true) {
     throw new Error(`Worker build must emit exactly one entry chunk; received ${chunks.length}`);
   }
   if (chunks[0].imports.length || chunks[0].dynamicImports.length) {
-    throw new Error('Worker bundle must not contain static or dynamic external chunk imports');
+    throw new Error("Worker bundle must not contain static or dynamic external chunk imports");
   }
   if (assets.length) {
-    throw new Error(`Worker build emitted unsupported assets: ${assets.map(item => item.fileName).join(', ')}`);
+    throw new Error(
+      `Worker build emitted unsupported assets: ${assets.map((item) => item.fileName).join(", ")}`,
+    );
   }
-  const bundleBytes = Buffer.byteLength(chunks[0].code, 'utf8');
+  const bundleBytes = Buffer.byteLength(chunks[0].code, "utf8");
   if (bundleBytes > MAX_WORKER_BUNDLE_BYTES) {
-    throw new Error(`Worker bundle exceeds ${MAX_WORKER_BUNDLE_BYTES} byte budget; received ${bundleBytes}`);
+    throw new Error(
+      `Worker bundle exceeds ${MAX_WORKER_BUNDLE_BYTES} byte budget; received ${bundleBytes}`,
+    );
   }
   console.log(`[worker-build] worker.js ${bundleBytes} bytes (budget ${MAX_WORKER_BUNDLE_BYTES})`);
   return chunks[0];

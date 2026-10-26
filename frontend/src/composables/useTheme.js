@@ -1,16 +1,18 @@
-import { useUiPreferences } from './useUiPreferences';
+import { useUiPreferences } from "./useUiPreferences";
 
-const THEME_LIGHT = 'light';
-const THEME_DARK = 'dark';
-const SYSTEM_THEME_MEDIA_QUERY = '(prefers-color-scheme: dark)';
+const THEME_LIGHT = "light";
+const THEME_DARK = "dark";
+const SYSTEM_THEME_MEDIA_QUERY = "(prefers-color-scheme: dark)";
 
-function normalizeTheme(value = '') {
-  const normalized = String(value || '').trim().toLowerCase();
-  return normalized === THEME_LIGHT || normalized === THEME_DARK ? normalized : '';
+function normalizeTheme(value = "") {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  return normalized === THEME_LIGHT || normalized === THEME_DARK ? normalized : "";
 }
 
 function getSystemThemeMediaQuery() {
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return null;
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return null;
   try {
     return window.matchMedia(SYSTEM_THEME_MEDIA_QUERY);
   } catch {
@@ -23,37 +25,37 @@ function resolveSystemTheme(mediaQuery = getSystemThemeMediaQuery()) {
   return mediaQuery.matches ? THEME_DARK : THEME_LIGHT;
 }
 
-function resolveThemeState(preferredTheme = '') {
+function resolveThemeState(preferredTheme = "") {
   const normalized = normalizeTheme(preferredTheme);
   if (normalized) {
     return {
-      source: 'stored',
+      source: "stored",
       preference: normalized,
-      resolved: normalized
+      resolved: normalized,
     };
   }
 
   return {
-    source: 'system',
-    preference: 'system',
-    resolved: resolveSystemTheme()
+    source: "system",
+    preference: "system",
+    resolved: resolveSystemTheme(),
   };
 }
 
 function applyThemeState(themeState) {
-  if (typeof document === 'undefined') return themeState;
+  if (typeof document === "undefined") return themeState;
 
   const resolvedTheme = themeState?.resolved === THEME_LIGHT ? THEME_LIGHT : THEME_DARK;
-  const themePreference = themeState?.preference || 'system';
-  const themeSource = themeState?.source || 'system';
+  const themePreference = themeState?.preference || "system";
+  const themeSource = themeState?.source || "system";
   const targets = [document.documentElement, document.body].filter(Boolean);
 
   for (const target of targets) {
     target.dataset.theme = resolvedTheme;
     target.dataset.themePreference = themePreference;
     target.dataset.themeSource = themeSource;
-    target.classList.toggle('theme-light', resolvedTheme === THEME_LIGHT);
-    target.classList.toggle('theme-dark', resolvedTheme === THEME_DARK);
+    target.classList.toggle("theme-light", resolvedTheme === THEME_LIGHT);
+    target.classList.toggle("theme-dark", resolvedTheme === THEME_DARK);
   }
 
   document.documentElement.style.colorScheme = resolvedTheme;
@@ -64,24 +66,24 @@ function applyThemeState(themeState) {
   return {
     source: themeSource,
     preference: themePreference,
-    resolved: resolvedTheme
+    resolved: resolvedTheme,
   };
 }
 
 function watchSystemTheme(onChange) {
   const mediaQuery = getSystemThemeMediaQuery();
-  if (!mediaQuery || typeof onChange !== 'function') return () => {};
+  if (!mediaQuery || typeof onChange !== "function") return () => {};
 
   const handleChange = () => {
     onChange(resolveSystemTheme(mediaQuery));
   };
 
-  if (typeof mediaQuery.addEventListener === 'function') {
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+  if (typeof mediaQuery.addEventListener === "function") {
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }
 
-  if (typeof mediaQuery.addListener === 'function') {
+  if (typeof mediaQuery.addListener === "function") {
     mediaQuery.addListener(handleChange);
     return () => mediaQuery.removeListener(handleChange);
   }
@@ -97,18 +99,18 @@ export function useTheme() {
     return normalizeTheme(uiPreferences.readTheme());
   }
 
-  function restartSystemThemeSync(preferredTheme = '') {
+  function restartSystemThemeSync(preferredTheme = "") {
     stopSystemThemeSync();
     stopSystemThemeSync = () => {};
 
     if (normalizeTheme(preferredTheme)) return;
 
     stopSystemThemeSync = watchSystemTheme(() => {
-      applyThemeState(resolveThemeState(''));
+      applyThemeState(resolveThemeState(""));
     });
   }
 
-  function applyTheme(preferredTheme = '') {
+  function applyTheme(preferredTheme = "") {
     const normalizedTheme = normalizeTheme(preferredTheme);
     const themeState = applyThemeState(resolveThemeState(normalizedTheme));
     restartSystemThemeSync(normalizedTheme);
@@ -119,7 +121,7 @@ export function useTheme() {
     return applyTheme(readThemePreference());
   }
 
-  function setTheme(value = '') {
+  function setTheme(value = "") {
     const normalizedTheme = normalizeTheme(value);
     uiPreferences.persistTheme(normalizedTheme);
     return applyTheme(normalizedTheme);
@@ -139,6 +141,6 @@ export function useTheme() {
     applyTheme,
     initializeTheme,
     setTheme,
-    cleanup
+    cleanup,
   };
 }

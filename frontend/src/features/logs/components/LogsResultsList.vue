@@ -1,29 +1,29 @@
 <script setup>
-import { computed, ref } from 'vue';
-import { Eye, RotateCcw, SlidersHorizontal } from 'lucide-vue-next';
+import { computed, ref } from "vue";
+import { Eye, RotateCcw, SlidersHorizontal } from "lucide-vue-next";
 
-import { useUiPreferences } from '@/composables/useUiPreferences';
+import { useUiPreferences } from "@/composables/useUiPreferences";
 
 const props = defineProps({
   items: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   activeLogKey: {
     type: String,
-    default: ''
+    default: "",
   },
   anyBusy: {
     type: Boolean,
-    default: false
+    default: false,
   },
   emptyText: {
     type: String,
-    default: '当前没有可展示的日志结果。'
-  }
+    default: "当前没有可展示的日志结果。",
+  },
 });
 
-const emit = defineEmits(['open-detail']);
+const emit = defineEmits(["open-detail"]);
 
 const UA_COLUMN_WIDTH_MIN = 50;
 const UA_COLUMN_WIDTH_MAX = 520;
@@ -36,7 +36,7 @@ const normalizedItems = computed(() => (Array.isArray(props.items) ? props.items
 const uaColumnWidth = ref(resolveInitialUaColumnWidth());
 
 const uaColumnWidthStyle = computed(() => ({
-  '--logs-ua-column-width': `${uaColumnWidth.value}px`
+  "--logs-ua-column-width": `${uaColumnWidth.value}px`,
 }));
 
 const uaColumnWidthLabel = computed(() => `${uaColumnWidth.value} px`);
@@ -48,13 +48,13 @@ function handleUaColumnWidthInput(event) {
 
 function handleResetUaColumnWidth() {
   uaColumnWidth.value = UA_COLUMN_WIDTH_DEFAULT;
-  uiPreferences.persistLogUaColumnWidth('');
+  uiPreferences.persistLogUaColumnWidth("");
 }
 
 function handleOpenDetail(item = null) {
-  const logKey = String(item?.key || '').trim();
+  const logKey = String(item?.key || "").trim();
   if (!logKey || props.anyBusy) return;
-  emit('open-detail', logKey);
+  emit("open-detail", logKey);
 }
 
 function resolveInitialUaColumnWidth() {
@@ -66,14 +66,12 @@ function applyUaColumnWidth(value) {
   const normalized = normalizeUaColumnWidth(value, UA_COLUMN_WIDTH_DEFAULT);
   uaColumnWidth.value = normalized;
   uiPreferences.persistLogUaColumnWidth(
-    normalized === UA_COLUMN_WIDTH_DEFAULT
-      ? ''
-      : String(normalized)
+    normalized === UA_COLUMN_WIDTH_DEFAULT ? "" : String(normalized),
   );
 }
 
 function normalizeUaColumnWidth(value, fallback = UA_COLUMN_WIDTH_DEFAULT) {
-  const numeric = Math.round(Number.parseFloat(String(value ?? '').trim()));
+  const numeric = Math.round(Number.parseFloat(String(value ?? "").trim()));
   if (!Number.isFinite(numeric)) return fallback;
   return Math.min(UA_COLUMN_WIDTH_MAX, Math.max(UA_COLUMN_WIDTH_MIN, numeric));
 }
@@ -92,14 +90,17 @@ function normalizeUaColumnWidth(value, fallback = UA_COLUMN_WIDTH_DEFAULT) {
             <p class="text-xs uppercase tracking-[0.16em] text-slate-400">UA 宽度偏好</p>
           </div>
           <p class="mt-3 text-sm leading-6 text-slate-300">
-            这里会沿用现有 `logUaColumnWidth` 本地偏好。调整后会立即写回本地存储，后续再次进入日志页仍会沿用。
+            这里会沿用现有 `logUaColumnWidth`
+            本地偏好。调整后会立即写回本地存储，后续再次进入日志页仍会沿用。
           </p>
         </div>
 
         <div class="w-full max-w-xl rounded-2xl border border-white/8 bg-slate-950/45 px-4 py-3">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <p class="text-sm font-medium text-white">User Agent 区域宽度</p>
-            <span class="inline-flex rounded-full border border-brand-400/20 bg-brand-500/10 px-3 py-1 text-xs text-brand-100">
+            <span
+              class="inline-flex rounded-full border border-brand-400/20 bg-brand-500/10 px-3 py-1 text-xs text-brand-100"
+            >
               {{ hasCustomUaColumnWidth ? uaColumnWidthLabel : `${uaColumnWidthLabel} · 默认` }}
             </span>
           </div>
@@ -114,8 +115,10 @@ function normalizeUaColumnWidth(value, fallback = UA_COLUMN_WIDTH_DEFAULT) {
             @input="handleUaColumnWidthInput"
           />
 
-          <div class="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
-                <span>{{ UA_COLUMN_WIDTH_MIN }} px 到 {{ UA_COLUMN_WIDTH_MAX }} px</span>
+          <div
+            class="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400"
+          >
+            <span>{{ UA_COLUMN_WIDTH_MIN }} px 到 {{ UA_COLUMN_WIDTH_MAX }} px</span>
             <button
               type="button"
               class="secondary-btn !px-3 !py-2 text-xs"
@@ -135,9 +138,11 @@ function normalizeUaColumnWidth(value, fallback = UA_COLUMN_WIDTH_DEFAULT) {
         v-for="item in normalizedItems"
         :key="item.key"
         class="rounded-3xl border bg-slate-950/45 p-5"
-        :class="item.key === activeLogKey
-          ? 'border-brand-400/40 shadow-[0_16px_42px_rgba(249,115,22,0.12)]'
-          : 'border-white/10'"
+        :class="
+          item.key === activeLogKey
+            ? 'border-brand-400/40 shadow-[0_16px_42px_rgba(249,115,22,0.12)]'
+            : 'border-white/10'
+        "
       >
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div class="min-w-0 flex-1">
@@ -148,7 +153,9 @@ function normalizeUaColumnWidth(value, fallback = UA_COLUMN_WIDTH_DEFAULT) {
               >
                 {{ item.statusCode }}
               </span>
-              <span class="inline-flex rounded-full border border-white/10 bg-white/6 px-2.5 py-1 text-xs text-slate-200">
+              <span
+                class="inline-flex rounded-full border border-white/10 bg-white/6 px-2.5 py-1 text-xs text-slate-200"
+              >
                 {{ item.category }}
               </span>
               <span
@@ -175,7 +182,8 @@ function normalizeUaColumnWidth(value, fallback = UA_COLUMN_WIDTH_DEFAULT) {
               {{ item.method }} {{ item.path }}
             </p>
             <p class="mt-3 text-sm leading-6 text-slate-300">
-              节点 {{ item.nodeName }}，客户端 {{ item.clientText }}，入口 / 出口 {{ item.coloText }}
+              节点 {{ item.nodeName }}，客户端 {{ item.clientText }}，入口 / 出口
+              {{ item.coloText }}
             </p>
             <div v-if="item.diagnosticBadges.length" class="mt-4 flex flex-wrap gap-2">
               <span
@@ -187,10 +195,7 @@ function normalizeUaColumnWidth(value, fallback = UA_COLUMN_WIDTH_DEFAULT) {
                 {{ badge.label }} · {{ badge.value }}
               </span>
             </div>
-            <p
-              v-if="item.diagnosticSummary"
-              class="mt-3 text-xs leading-6 text-slate-400"
-            >
+            <p v-if="item.diagnosticSummary" class="mt-3 text-xs leading-6 text-slate-400">
               {{ item.diagnosticSummary }}
             </p>
           </div>
@@ -198,7 +203,9 @@ function normalizeUaColumnWidth(value, fallback = UA_COLUMN_WIDTH_DEFAULT) {
           <div class="flex flex-col items-end gap-3 text-right text-sm leading-6 text-slate-300">
             <div>
               <p>{{ item.timestampText }}</p>
-              <p class="mt-2 text-xs uppercase tracking-[0.16em] text-slate-500">{{ item.responseTimeText }}</p>
+              <p class="mt-2 text-xs uppercase tracking-[0.16em] text-slate-500">
+                {{ item.responseTimeText }}
+              </p>
             </div>
 
             <button
@@ -208,7 +215,7 @@ function normalizeUaColumnWidth(value, fallback = UA_COLUMN_WIDTH_DEFAULT) {
               @click="handleOpenDetail(item)"
             >
               <Eye class="h-4 w-4" />
-              {{ item.key === activeLogKey ? '查看中' : '查看详情' }}
+              {{ item.key === activeLogKey ? "查看中" : "查看详情" }}
             </button>
           </div>
         </div>

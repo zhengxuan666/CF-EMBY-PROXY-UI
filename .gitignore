@@ -1,10 +1,13 @@
-frontend/node_modules/
 node_modules/
 frontend/.env.local
 frontend/.env.*.local
 .dev.vars
 .dev.vars.*
 !.dev.vars.example
+# wrangler tail 等 CLI 的本地凭据，只保留占位模板
+/.env
+/.env.*
+!/.env.example
 .wrangler/
 npm-debug.log*
 .ace-tool/
@@ -16,3 +19,12 @@ prompts/
 banker/
 .admin-ui.from-*.html
 frontend/.admin-runtime-sync.json
+logs-*.json
+trace-*.json
+*.pprof
+
+# 管理端是单文件交付，dist 只跟踪 index.html；历史打包残留不得进仓库
+frontend/dist/.vite/
+
+# 本地私有部署配置（真实 worker 名 / KV / D1 / 域），只在本机使用
+/wrangler.local.toml

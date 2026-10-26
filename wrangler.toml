@@ -3,6 +3,11 @@ main = "worker.js" # Worker 的主入口文件
 compatibility_date = "2026-03-13" # 兼容性日期，用于指定使用的 Cloudflare 运行时版本
 compatibility_flags = ["enable_request_signal"] # 开启 Request.signal 客户端断开感知
 
+# 默认关闭 workers.dev 子域，避免一次 deploy 就把 test.<account>.workers.dev 对外暴露。
+# 想用子域快速试跑时改为 true，或直接删掉这两行。
+workers_dev = false
+preview_urls = false
+
 [build]
 command = "npm run build:worker"
 watch_dir = ["worker", "vite.worker.config.js", "scripts/build-worker.mjs", "scripts/worker-build-lib.mjs"]
@@ -13,12 +18,21 @@ binding = "ASSETS"
 run_worker_first = true
 html_handling = "none"
 
+# 让 wrangler tail / Workers Logs 能看到每次调用的 CPU 时间与 wall time；不需要可整段删除。
+[observability]
+enabled = true
+
+# 可选：自定义域与旧域。代码优先读 KV 里的节点路由，这里用于生成对外链接与兼容旧入口。
+# [vars]
+# HOST = "media.example.com"
+# LEGACY_HOST = "old.example.com"
+
 # KV 命名空间绑定声明 (KV Namespace Binding)
 [triggers]
 crons = ["0 * * * *"]
 
 [[kv_namespaces]]
-binding = "ENI_KV" # 代码中调用该 KV 的变量名
+binding = "ENI_KV" # 代码优先读 ENI_KV，其次读 KV
 id = "e6386ce5f73c474f8f3018352f8b542f" # 你的 KV 命名空间 ID (请替换为实际的 32 位字母数字组合)
 
 # D1 数据库绑定声明 (D1 Database Binding)

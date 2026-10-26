@@ -18,7 +18,8 @@
   :root {
     --app-color-scheme: dark;
     --app-body-base: #08111f;
-    --app-body-bg: radial-gradient(circle at top, rgba(14, 165, 233, 0.18), transparent 38%),
+    --app-body-bg:
+      radial-gradient(circle at top, rgba(14, 165, 233, 0.18), transparent 38%),
       linear-gradient(180deg, #08111f 0%, #0f1b31 52%, #111827 100%);
     --app-text: #e2e8f0;
     --app-text-strong: #ffffff;
@@ -39,14 +40,15 @@
     color-scheme: var(--app-color-scheme);
   }
 
-  :root[data-theme='dark'] {
+  :root[data-theme="dark"] {
     --app-color-scheme: dark;
   }
 
-  :root[data-theme='light'] {
+  :root[data-theme="light"] {
     --app-color-scheme: light;
     --app-body-base: #f8fafc;
-    --app-body-bg: radial-gradient(circle at top, rgba(14, 165, 233, 0.12), transparent 42%),
+    --app-body-bg:
+      radial-gradient(circle at top, rgba(14, 165, 233, 0.12), transparent 42%),
       linear-gradient(180deg, #f8fafc 0%, #eef2ff 48%, #e2e8f0 100%);
     --app-text: #0f172a;
     --app-text-strong: #08111f;
@@ -89,10 +91,12 @@
     @apply transition-colors;
   }
 
-  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
   select,
   textarea,
-  label:has(> input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color'])),
+  label:has(
+    > input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"])
+  ),
   label:has(> select),
   label:has(> textarea) {
     border-radius: var(--app-input-radius) !important;
@@ -188,59 +192,59 @@
 }
 
 @layer utilities {
-  :root[data-theme='light'] .text-white {
+  :root[data-theme="light"] .text-white {
     color: var(--app-text-strong) !important;
   }
 
-  :root[data-theme='light'] .text-slate-100,
-  :root[data-theme='light'] .text-slate-200 {
+  :root[data-theme="light"] .text-slate-100,
+  :root[data-theme="light"] .text-slate-200 {
     color: var(--app-text) !important;
   }
 
-  :root[data-theme='light'] .text-slate-300 {
+  :root[data-theme="light"] .text-slate-300 {
     color: var(--app-text-muted) !important;
   }
 
-  :root[data-theme='light'] .text-slate-400,
-  :root[data-theme='light'] .text-slate-500 {
+  :root[data-theme="light"] .text-slate-400,
+  :root[data-theme="light"] .text-slate-500 {
     color: var(--app-text-faint) !important;
   }
 
-  :root[data-theme='light'] .bg-white\/4,
-  :root[data-theme='light'] .bg-white\/5,
-  :root[data-theme='light'] .bg-white\/6,
-  :root[data-theme='light'] .bg-white\/8,
-  :root[data-theme='light'] .bg-white\/10 {
+  :root[data-theme="light"] .bg-white\/4,
+  :root[data-theme="light"] .bg-white\/5,
+  :root[data-theme="light"] .bg-white\/6,
+  :root[data-theme="light"] .bg-white\/8,
+  :root[data-theme="light"] .bg-white\/10 {
     background-color: var(--app-surface-overlay) !important;
   }
 
-  :root[data-theme='light'] .bg-slate-950\/30,
-  :root[data-theme='light'] .bg-slate-950\/35,
-  :root[data-theme='light'] .bg-slate-950\/40,
-  :root[data-theme='light'] .bg-slate-950\/45,
-  :root[data-theme='light'] .bg-slate-950\/50,
-  :root[data-theme='light'] .bg-slate-950\/55,
-  :root[data-theme='light'] .bg-slate-950\/60,
-  :root[data-theme='light'] .bg-slate-950\/70,
-  :root[data-theme='light'] .bg-slate-950\/75,
-  :root[data-theme='light'] .bg-slate-950\/85,
-  :root[data-theme='light'] .bg-slate-950\/90 {
+  :root[data-theme="light"] .bg-slate-950\/30,
+  :root[data-theme="light"] .bg-slate-950\/35,
+  :root[data-theme="light"] .bg-slate-950\/40,
+  :root[data-theme="light"] .bg-slate-950\/45,
+  :root[data-theme="light"] .bg-slate-950\/50,
+  :root[data-theme="light"] .bg-slate-950\/55,
+  :root[data-theme="light"] .bg-slate-950\/60,
+  :root[data-theme="light"] .bg-slate-950\/70,
+  :root[data-theme="light"] .bg-slate-950\/75,
+  :root[data-theme="light"] .bg-slate-950\/85,
+  :root[data-theme="light"] .bg-slate-950\/90 {
     background-color: var(--app-surface-card) !important;
   }
 
-  :root[data-theme='light'] .border-white\/8,
-  :root[data-theme='light'] .border-white\/10,
-  :root[data-theme='light'] .border-white\/12,
-  :root[data-theme='light'] .border-white\/20 {
+  :root[data-theme="light"] .border-white\/8,
+  :root[data-theme="light"] .border-white\/10,
+  :root[data-theme="light"] .border-white\/12,
+  :root[data-theme="light"] .border-white\/20 {
     border-color: var(--app-border-subtle) !important;
   }
 
-  :root[data-theme='light'] .hover\:border-white\/20:hover {
+  :root[data-theme="light"] .hover\:border-white\/20:hover {
     border-color: var(--app-border-strong) !important;
   }
 
-  :root[data-theme='light'] .hover\:bg-white\/8:hover,
-  :root[data-theme='light'] .hover\:bg-white\/10:hover {
+  :root[data-theme="light"] .hover\:bg-white\/8:hover,
+  :root[data-theme="light"] .hover\:bg-white\/10:hover {
     background-color: var(--app-secondary-btn-hover-bg) !important;
   }
 }
